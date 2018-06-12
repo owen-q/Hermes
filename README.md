@@ -1,11 +1,10 @@
-(Doing ...)
-# 
-Modern Java SIP Framework based on Reactive 
+# What is Hermes?
+Hermes is modern SIP server.
 
-- Lightweight
-- Reactive 
-- Fast 
-- Intuitive
+It will substitute old legacy SipServlet.
+It is based on reactive manifesto.
+
+Hermes is detach from [new-proxy](https://github.com/lunker/new-proxy) by main contributor owen-q(a.k.a [lunker](https://github.com/lunker))
 
 
 ## Dependency 
@@ -13,7 +12,18 @@ Modern Java SIP Framework based on Reactive
 - Netty 
 - Reactor Core
 
+
+## Features
+
+
+
+## Install
+
+
+
 ## How to test
+
+
 
 
 ## Javadoc
@@ -21,7 +31,7 @@ Modern Java SIP Framework based on Reactive
 
 
 
-Licensed Under GNU Lesser General Public License v2.1
+Licensed Under GNU Lesser General Public License v3.0
 
 
 
