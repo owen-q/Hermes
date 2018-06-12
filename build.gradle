@@ -1,0 +1,147 @@
+group 'org.lunker'
+version '1.0.1'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven-publish'
+
+sourceCompatibility = 1.8
+
+repositories {
+    maven { url 'http://repo.spring.io/milestone' }
+    mavenCentral()
+}
+
+ext{
+    akkaVersion="2.5.5"
+    slf4jVersion = '1.7.21'
+    log4j2Version = '2.5'
+    commonsLogging = '1.2'
+    nettyVersion='4.1.21.Final'
+}
+
+
+dependencies {
+    // junit
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    // reactor-core
+    compile "io.projectreactor:reactor-core:3.2.0.M1"
+    testCompile("io.projectreactor:reactor-test:3.2.0.M1")
+
+    
+
+    compile("io.netty:netty-all:${nettyVersion}"){
+        exclude group: 'log4j', module:'log4j'
+        exclude group: 'commons-logging', module: 'commons-logging'
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+
+    // SLF4J-Log4j2
+    compile("commons-logging:commons-logging:${commonsLogging}")
+    compile("org.slf4j:slf4j-api:${slf4jVersion}")
+    compile("org.apache.logging.log4j:log4j-api:${log4j2Version}")
+    compile("org.apache.logging.log4j:log4j-core:${log4j2Version}")
+    compile("org.apache.logging.log4j:log4j-slf4j-impl:${log4j2Version}")
+
+    compile group: 'javax.sip', name: 'jain-sip-ri', version: '1.3.0-32'
+
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.3'
+
+
+    // https://mvnrepository.com/artifact/redis.clients/jedis
+    testCompile group: 'redis.clients', name: 'jedis', version: '2.9.0'
+
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+    testCompile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.5'
+
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpasyncclient
+    testCompile group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: '4.1.3'
+
+}
+
+sourceSets{
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDir 'src/main/resources'
+            exclude 'application.json'
+            exclude 'log4j2.xml'
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes  'Title': 'NewProxy', 'Version': 1.0, 'Main-Class': 'org.lunker.new_proxy.Application'
+    }
+
+    baseName 'new-proxy'
+    dependsOn configurations.runtime
+    from {
+        configurations.compile.collect {it.isDirectory()? it: zipTree(it)}
+    }
+
+    exclude '**/resources/log4j2.xml'
+}
+
+
+// javadoc.jar generation
+task javadocJar (type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+// sources.jar generation
+task sourceJar (type : Jar) {
+    classifier = 'sources'
+    from sourceSets.main.java
+}
+
+artifacts {
+    archives jar
+    archives sourceJar
+    archives javadocJar
+}
+
+publishing {
+    publications {
+
+        jar(MavenPublication) {
+            from components.java
+
+            artifact sourceJar {
+                classifier "sources"
+            }
+
+            artifact javadocJar {
+                classifier "javadoc"
+            }
+        }
+    }
+
+    repositories {
+        maven{
+
+            print(project.version.toString().contains('SNAPSHOT'))
+
+            if (project.version.toString().contains('SNAPSHOT')){
+                url 'http://10.0.1.159:8081/repository/proxy-snapshot/'
+            }
+            else {
+                url 'http://10.0.1.159:8081/repository/proxy-release/'
+            }
+
+            credentials {
+                username System.getProperty('user')
+                password System.getProperty('password')
+            }
+        }
+    }
+}
+
+
+
+
+

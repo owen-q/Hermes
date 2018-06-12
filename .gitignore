@@ -1,0 +1,7 @@
+out/
+build/
+.gradle/
+.idea/
+
+# Server debugging logs
+logs/
