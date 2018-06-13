@@ -47,6 +47,7 @@ public class SipConverter extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         // saving connection process moved to channelRegistered.
+        logger.info("In sipConverter active!");
         InetSocketAddress remoteAddress=((InetSocketAddress)ctx.channel().remoteAddress());
         this.connectionManager.addConnection(remoteAddress.getHostString(), remoteAddress.getPort(), this.transport.getValue(), ctx);
     }
@@ -55,13 +56,16 @@ public class SipConverter extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         try{
+            logger.info("In sipConverter chanelRead");
             Mono<String> wrapper=Mono.fromCallable(()->{
                 Optional<String> maybeStrSipMessage=(Optional<String>) msg;
 
                 // 결국 이것만 다르다
                 Optional<DefaultSipMessage> maybeGeneralSipMessage=deserialize(ctx, maybeStrSipMessage);
 
-                ctx.fireChannelRead(maybeGeneralSipMessage);
+//                ctx.fireChannelRead(maybeGeneralSipMessage);
+
+                System.out.println("break");
 
                 return "fromCallable return value";
             });

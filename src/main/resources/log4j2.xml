@@ -17,7 +17,7 @@
             <DefaultRolloverStrategy max="500"/>
         </RollingRandomAccessFile>
 
-        <Async name="ASYNC_LogApp" includeLocation="true">
+        <Async name="ASYNC_CONSOLE" includeLocation="true">
             <AppenderRef ref="console" />
         </Async>
 
@@ -28,7 +28,7 @@
         <!--<AppenderRef ref="ASYNC_LogApp"/>-->
         <!--</Logger>-->
             <Root level="debug">
-                <AppenderRef ref="ASYNC_LogApp"/>
+                <AppenderRef ref="ASYNC_CONSOLE"/>
                 <!--<AppenderRef ref="LogApp" />-->
             </Root>
         </Loggers>

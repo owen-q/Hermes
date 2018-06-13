@@ -15,12 +15,16 @@ import org.slf4j.LoggerFactory;
  */
 public class TestServerFactory {
     private Logger logger = LoggerFactory.getLogger(TestServerFactory.class);
-    private String host="localhost";
-    private int port=10202;
+    private String host="10.0.8.2";
+    private int port=10000;
+    private SipServer testSipServer=null;
 
     @Before
     public void beforeTest(){
+        ServerFactory serverFactory=new ServerFactory();
+        serverFactory=serverFactory.host(host).port(port).transport(Transport.TCP);
 
+        testSipServer=serverFactory.build();
     }
 
     @After
@@ -42,13 +46,11 @@ public class TestServerFactory {
 
     @Test
     public void testRunServerAsync() throws Exception{
-        SipServer sipServer = null;
-        sipServer.run(false);
+        testSipServer.run(false);
     }
 
     @Test
     public void testRunServerSync() throws Exception{
-        SipServer sipServer = null;
-        sipServer.run(false);
+        testSipServer.run(true);
     }
 }
