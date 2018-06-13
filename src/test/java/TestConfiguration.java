@@ -1,8 +1,8 @@
 import com.google.gson.JsonObject;
 import org.junit.Assert;
 import org.junit.Test;
-import org.lunker.new_proxy.config.Configuration;
-import org.lunker.new_proxy.exception.InvalidConfigurationException;
+import org.owen.hermes.config.Configuration;
+import org.owen.hermes.exception.InvalidConfigurationException;
 
 /**
  * Created by dongqlee on 2018. 4. 26..
