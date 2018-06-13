@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.sip.header.ContentLengthHeader;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -176,7 +175,7 @@ public class TcpStreamDecoder extends ByteToMessageDecoder{
                         this.readBodyLength=0;
                         this.contentLength=0;
 
-                        ctx.fireChannelRead(Optional.ofNullable(strSipMessage));
+                        ctx.fireChannelRead(strSipMessage);
                     }
                     catch (Exception e){
                         e.printStackTrace();

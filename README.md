@@ -1,10 +1,10 @@
 # What is Hermes?
 Hermes is modern SIP server.
 
-Hermes will substitute old legacy SipServlet.
+Hermes will substitute old legacy SipServlet.  
 Hermes is based on reactive manifesto.
 
-Hermes makes you better reactive programming without consider complicated NIO, reactive backgrounds.
+Hermes makes you better reactive programming without consider complicated NIO, reactive backgrounds.  
 
 
 *Hermes is detach from [new-proxy](https://github.com/lunker/new-proxy) by main contributor owen-q(a.k.a [lunker](https://github.com/lunker))*
@@ -33,7 +33,7 @@ Hermes makes you better reactive programming without consider complicated NIO, r
 
 
 
-
+## License
 Licensed Under GNU Lesser General Public License v3.0
 
 

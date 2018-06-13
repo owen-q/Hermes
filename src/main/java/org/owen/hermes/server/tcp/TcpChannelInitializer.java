@@ -5,7 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.ssl.SslContext;
 import org.owen.hermes.model.Transport;
 import org.owen.hermes.server.TransportChannelInitializer;
-import org.owen.hermes.sip.processor.SipPreProcessor;
+import org.owen.hermes.sip.processor.SipConverter;
 import org.owen.hermes.stub.SipMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +37,7 @@ public class TcpChannelInitializer extends TransportChannelInitializer {
         }
 
         ch.pipeline().addLast("decoder", new TcpStreamDecoder());
-        ch.pipeline().addLast("preProcessor", new SipPreProcessor(transport)); // Lb, Proxy
+        ch.pipeline().addLast("preProcessor", new SipConverter(transport)); // Lb, Proxy
 
         ch.pipeline().addLast("sipServletImpl", sipMessageHandler);
     }

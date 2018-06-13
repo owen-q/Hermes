@@ -7,15 +7,11 @@ import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.parser.StringMsgParser;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import org.owen.hermes.config.Configuration;
 import org.owen.hermes.core.ConnectionManager;
-import org.owen.hermes.model.ServerType;
 import org.owen.hermes.model.Transport;
 import org.owen.hermes.sip.wrapper.message.DefaultSipMessage;
-import org.owen.hermes.sip.wrapper.message.lb.LoadBalancerRequest;
-import org.owen.hermes.sip.wrapper.message.lb.LoadBalancerResponse;
-import org.owen.hermes.sip.wrapper.message.proxy.ProxySipRequest;
-import org.owen.hermes.sip.wrapper.message.proxy.ProxySipResponse;
+import org.owen.hermes.sip.wrapper.message.DefaultSipRequest;
+import org.owen.hermes.sip.wrapper.message.DefaultSipResponse;
 import org.owen.hermes.util.lambda.StreamHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,18 +25,16 @@ import java.util.Optional;
 /**
  * Created by dongqlee on 2018. 5. 30..
  */
-public class SipPreProcessor extends ChannelInboundHandlerAdapter {
-    private Logger logger= LoggerFactory.getLogger(SipPreProcessor.class);
+public class SipConverter extends ChannelInboundHandlerAdapter {
+    private Logger logger= LoggerFactory.getLogger(SipConverter.class);
     private ConnectionManager connectionManager;
 
     private StringMsgParser stringMsgParser;
 
     private Transport transport;
-    private ServerType serverType;
 
-    public SipPreProcessor(Transport transport) {
+    public SipConverter(Transport transport) {
         this.transport = transport;
-        this.serverType= Configuration.getInstance().getServerType();
         this.stringMsgParser = new StringMsgParser();
         this.connectionManager = ConnectionManager.getInstance();
     }
@@ -123,32 +117,11 @@ public class SipPreProcessor extends ChannelInboundHandlerAdapter {
         DefaultSipMessage defaultSipMessage =null;
 
         if(jainSipMessage instanceof SIPRequest){
-            switch (this.serverType) {
-                case PROXY:
-                    defaultSipMessage = new ProxySipRequest(jainSipMessage);
-                    break;
-                case LB:
-                    defaultSipMessage = new LoadBalancerRequest(jainSipMessage);
-                    break;
-            }
+            defaultSipMessage=new DefaultSipRequest(jainSipMessage);
         }
         else{ // jainSipMessage instanceof SIPResponse
-            switch (this.serverType) {
-                case PROXY:
-                    defaultSipMessage = new ProxySipResponse(jainSipMessage);
-                    break;
-                case LB:
-                    defaultSipMessage = new LoadBalancerResponse(jainSipMessage);
-                    break;
-            }
+            defaultSipMessage=new DefaultSipResponse(jainSipMessage);
         }
-
-        /*
-        // TODO: next step on 'Stateful Proxy'
-        if(jainSipMessage instanceof SIPRequest && sipSession.getFirstRequest()==null && ((SIPRequest) jainSipMessage).getMethod().equals("INVITE")){
-            sipSession.setFirstRequest((ProxySipRequest) proxySipMessage);
-        }
-        */
 
         return defaultSipMessage;
     }
@@ -159,7 +132,6 @@ public class SipPreProcessor extends ChannelInboundHandlerAdapter {
                 .map(StreamHelper.wrapper(jainSipMessage -> updateMessage(ctx, jainSipMessage)))
                 .map(jainSipMessage -> generateGeneralSipMessage(ctx, jainSipMessage));
     }
-
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {

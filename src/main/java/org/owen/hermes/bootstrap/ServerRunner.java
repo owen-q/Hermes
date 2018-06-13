@@ -1,4 +1,4 @@
-package org.owen.hermes;
+package org.owen.hermes.bootstrap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

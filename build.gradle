@@ -16,7 +16,8 @@ ext{
     slf4jVersion = '1.7.21'
     log4j2Version = '2.5'
     commonsLogging = '1.2'
-    nettyVersion='4.1.21.Final'
+    nettyVersion='4.1.25.Final'
+    reactorCoreVersion='3.1.8.RELEASE'
 }
 
 
@@ -25,12 +26,13 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
     // reactor-core
-    compile "io.projectreactor:reactor-core:3.2.0.M1"
+    compile "io.projectreactor:reactor-core:${reactorCoreVersion}"
+    testCompile("io.projectreactor:reactor-test:${reactorCoreVersion}")
 
     // reactor-netty
     compile group: 'io.projectreactor.ipc', name: 'reactor-netty', version: '0.7.8.RELEASE'
 
-    testCompile("io.projectreactor:reactor-test:3.2.0.M1")
+
 
     compile("io.netty:netty-all:${nettyVersion}"){
         exclude group: 'log4j', module:'log4j'

@@ -11,7 +11,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.CharsetUtil;
-import org.owen.hermes.client.TcpConnectionGenerator;
 import org.owen.hermes.core.ConnectionManager;
 import org.owen.hermes.model.Transport;
 import org.owen.hermes.sip.util.SipMessageFactory;
@@ -214,27 +213,9 @@ public class DefaultSipMessage {
      */
     public void send(String remoteHost, int remotePort, String remoteTransport, Class SipMessageHandlerImpl) throws Exception {
         ChannelHandlerContext targetCtx = null;
-        // find channel
+
         // TODO: change name client to something like node?
         targetCtx = this.connectionManager.getConnection(remoteHost, remotePort, remoteTransport);
-
-        if (targetCtx == null) { // not found channel. create new one.
-            // TODO: create new channel and send message by using it.
-            switch (remoteTransport.toLowerCase()) {
-                case "udp":
-                    break;
-                case "tcp":
-                    TcpConnectionGenerator.getInstance().generate(remoteHost, remotePort, SipMessageHandlerImpl);
-                    targetCtx = this.connectionManager.getConnection(remoteHost, remotePort, "tcp");
-                    break;
-                case "tls":
-                    break;
-                case "ws":
-                    break;
-                case "wss":
-                    break;
-            }
-        }
 
         if (targetCtx != null) { // found channel
             ChannelFuture cf;

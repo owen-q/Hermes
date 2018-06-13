@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ConnectionManager {
     private Logger logger= LoggerFactory.getLogger(ConnectionManager.class);
-    // TODO: change ChannelHandlerContext to ChannelFuture?
+    // TODO: change ChannelHandlerContext to 'ClientConnection'
     private Map<String, ChannelHandlerContext> clientMap=null;
 
     private final int MAX_CONNECTION=10000;
