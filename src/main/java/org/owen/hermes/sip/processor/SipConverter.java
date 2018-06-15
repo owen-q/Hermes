@@ -23,7 +23,7 @@ import java.text.ParseException;
 import java.util.Optional;
 
 /**
- * Created by dongqlee on 2018. 5. 30..
+ * Created by owen_q on 2018. 5. 30..
  */
 public class SipConverter extends ChannelInboundHandlerAdapter {
     private Logger logger= LoggerFactory.getLogger(SipConverter.class);
@@ -49,7 +49,8 @@ public class SipConverter extends ChannelInboundHandlerAdapter {
         // saving connection process moved to channelRegistered.
         logger.info("In sipConverter active!");
         InetSocketAddress remoteAddress=((InetSocketAddress)ctx.channel().remoteAddress());
-        this.connectionManager.addConnection(remoteAddress.getHostString(), remoteAddress.getPort(), this.transport.getValue(), ctx);
+
+//        this.connectionManager.addConnection(remoteAddress.getHostString(), remoteAddress.getPort(), this.transport.getValue(), ctx);
     }
 
     // TODO: Refactoring. Proxy, LB preprocessor를 분리 및 상속 받을 필요가 없다
@@ -147,6 +148,6 @@ public class SipConverter extends ChannelInboundHandlerAdapter {
 //        logger.info("channelUnregistered");
         InetSocketAddress remoteAddress=((InetSocketAddress)ctx.channel().remoteAddress());
 
-        this.connectionManager.deleteConnection(remoteAddress.getHostString(), remoteAddress.getPort(),"tcp");
+//        this.connectionManager.deleteConnection(remoteAddress.getHostString(), remoteAddress.getPort(),"tcp");
     }
 }

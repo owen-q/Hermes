@@ -1,6 +1,7 @@
 package org.owen.hermes.core;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.owen.hermes.model.Transport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,24 +9,25 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by dongqlee on 2018. 5. 5..
+ * Created by owen_q on 2018. 5. 5..
  */
 public class ConnectionManager {
     private Logger logger= LoggerFactory.getLogger(ConnectionManager.class);
-    // TODO: change ChannelHandlerContext to 'ClientConnection'
-    private Map<String, ChannelHandlerContext> clientMap=null;
 
-    private final int MAX_CONNECTION=10000;
+    // TODO: change ChannelHandlerContext to 'ClientConnection'
+    private Map<String, ChannelHandlerContext> clientMap = null;
+
+    private final int MAX_CONNECTION_NUM = 10000;
     private ConnectionManager() {
-        this.clientMap=new ConcurrentHashMap<>(MAX_CONNECTION);
+        this.clientMap = new ConcurrentHashMap<>(MAX_CONNECTION_NUM);
     }
 
     public static ConnectionManager getInstance() {
         return SingletonHolder.INSTANCE;
     }
 
-    public void addConnection(String host, int port, String transport, ChannelHandlerContext channelHandlerContext){
-        String key= createConnectionKey(host, port, transport);
+    public void addConnection(String host, int port, Transport transport, ChannelHandlerContext channelHandlerContext){
+        String key = createConnectionKey(host, port, transport);
 
         this.clientMap.put(key, channelHandlerContext);
 
@@ -33,13 +35,13 @@ public class ConnectionManager {
             logger.debug("Add Client :: " + key);
     }
 
-    public ChannelHandlerContext getConnection(String host, int port, String transport){
+    public ChannelHandlerContext getConnection(String host, int port, Transport transport){
         String key= createConnectionKey(host, port, transport);
 
         return this.clientMap.get(key);
     }
 
-    public void deleteConnection(String host, int port, String transport){
+    public void deleteConnection(String host, int port, Transport transport){
         String key= createConnectionKey(host, port, transport);
 
         if(this.clientMap.containsKey(key)){
@@ -56,8 +58,11 @@ public class ConnectionManager {
     }
 
     private String createConnectionKey(String host, int port, String transport){
-//        return new StringBuilder().append(host).append(":").append(port).toString();
         return String.format("%s:%d:%s", host, port, transport);
+    }
+
+    private String createConnectionKey(String host, int port, Transport transport){
+        return String.format("%s:%d:%s", host, port, transport.getValue());
     }
 
 

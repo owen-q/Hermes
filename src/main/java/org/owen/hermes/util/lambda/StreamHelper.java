@@ -3,7 +3,7 @@ package org.owen.hermes.util.lambda;
 import java.util.function.Function;
 
 /**
- * Created by dongqlee on 2018. 4. 26..
+ * Created by owen_q on 2018. 4. 26..
  */
 public class StreamHelper {
 

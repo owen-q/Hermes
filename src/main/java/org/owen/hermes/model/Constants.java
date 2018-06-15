@@ -1,7 +1,7 @@
 package org.owen.hermes.model;
 
 /**
- * Created by dongqlee on 2018. 5. 31..
+ * Created by owen_q on 2018. 5. 31..
  */
 public class Constants {
     public static class Options{

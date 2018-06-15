@@ -171,7 +171,7 @@ public class DefaultSipMessage {
         String remoteInfo=String.format("%s:%d", remoteHost, remotePort);
 
         // TODO: refactoring
-        targetCtx=this.connectionManager.getConnection(remoteHost, remotePort, remoteTransport);
+//        targetCtx=this.connectionManager.getConnection(remoteHost, remotePort, remoteTransport);
 
         // TODO: Find target connection from Server Connector
         if(targetCtx!=null){
@@ -215,7 +215,7 @@ public class DefaultSipMessage {
         ChannelHandlerContext targetCtx = null;
 
         // TODO: change name client to something like node?
-        targetCtx = this.connectionManager.getConnection(remoteHost, remotePort, remoteTransport);
+//        targetCtx = this.connectionManager.getConnection(remoteHost, remotePort, remoteTransport);
 
         if (targetCtx != null) { // found channel
             ChannelFuture cf;

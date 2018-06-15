@@ -1,7 +1,7 @@
 package org.owen.hermes.model;
 
 /**
- * Created by dongqlee on 2018. 5. 20..
+ * Created by owen_q on 2018. 5. 20..
  */
 public class ServerInfo {
     private String host;

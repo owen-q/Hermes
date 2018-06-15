@@ -1,7 +1,7 @@
 package org.owen.hermes.model;
 
 /**
- * Created by dongqlee on 2018. 4. 27..
+ * Created by owen_q on 2018. 4. 27..
  */
 public enum ServerType {
     NONE("none"),
