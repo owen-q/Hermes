@@ -4,6 +4,7 @@ import org.owen.hermes.bootstrap.NettySipHandler;
 import org.owen.hermes.bootstrap.SipMessageHandler;
 import org.owen.hermes.model.Transport;
 import org.owen.hermes.server.tcp.HermesTcpSipServer;
+import org.owen.hermes.server.udp.HermesUdpSipServer;
 import org.owen.hermes.stub.SipServer;
 import org.owen.hermes.util.CheckUtil;
 import org.slf4j.Logger;
@@ -74,11 +75,11 @@ public class ServerFactory {
         nettySipHandler = NettySipHandler.create(this.sipMessageHandlerList);
 
         if(Transport.TCP.equals(this.serverTransport)){
-            sipServer= HermesTcpSipServer.create(this.serverListenHost, this.serverListenPort, nettySipHandler);
+            sipServer = HermesTcpSipServer.create(this.serverListenHost, this.serverListenPort, nettySipHandler);
         }
         else if(Transport.UDP.equals(this.serverTransport)){
             // TODO:
-//            sipServer=new UdpSipServer(sipMessageHandler);
+            sipServer = HermesUdpSipServer.create(this.serverListenHost, this.serverListenPort, nettySipHandler);
         }
         else if(Transport.TLS.equals(this.serverTransport)){
             // TODO:

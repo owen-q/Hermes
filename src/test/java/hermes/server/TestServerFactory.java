@@ -14,8 +14,8 @@ import org.owen.hermes.stub.SipServer;
  * Created by owen_q on 2018. 6. 13..
  */
 public class TestServerFactory {
-    private String host="10.0.1.202";
-//    private String host="10.0.8.2";
+//    private String host="10.0.1.202";
+    private String host="10.0.8.2";
     private int port=10000;
 
     @Rule
@@ -31,7 +31,7 @@ public class TestServerFactory {
     }
 
     @Test
-    public void testCreateServerWithoutHost(){
+    public void testCreateTcpServerWithoutHost(){
         expectedException.expect(IllegalArgumentException.class);
 
         ServerFactory serverFactory=new ServerFactory();
@@ -42,7 +42,7 @@ public class TestServerFactory {
 
 
     @Test
-    public void testCreateServerWithoutPort() throws Exception{
+    public void testCreateTcpServerWithoutPort() throws Exception{
         expectedException.expect(IllegalArgumentException.class);
 
         ServerFactory serverFactory=new ServerFactory();
@@ -52,7 +52,7 @@ public class TestServerFactory {
     }
 
     @Test
-    public void testCreateServerWithoutTransport(){
+    public void testCreateTcpServerWithoutTransport(){
         expectedException.expect(IllegalArgumentException.class);
 
         ServerFactory serverFactory=new ServerFactory();
@@ -62,7 +62,7 @@ public class TestServerFactory {
     }
 
     @Test
-    public void testCreateServerWithDuplicatedSipHandler(){
+    public void testCreateTcpServerWithDuplicatedSipHandler(){
         expectedException.expect(IllegalArgumentException.class);
 
         ServerFactory serverFactory=new ServerFactory();
@@ -81,7 +81,7 @@ public class TestServerFactory {
     }
 
     @Test
-    public void testCreateServer() throws Exception{
+    public void testTcpCreateServer() throws Exception{
         ServerFactory serverFactory = new ServerFactory();
         SipServer sipServer = null;
 
@@ -101,4 +101,27 @@ public class TestServerFactory {
 
         sipServer.runSync();
     }
+
+    @Test
+    public void testUdpCreateServer() throws Exception{
+        ServerFactory serverFactory = new ServerFactory();
+        SipServer sipServer = null;
+
+        SipMessageHandler<String, String> firstHandler=(msg)->{
+            return msg + "\n First handler!";
+        };
+
+        SipMessageHandler<String, String> secondHandler=(msg)->{
+            return msg + "\n Second handler!!!";
+        };
+
+        sipServer=serverFactory
+                .host(host).port(port).transport(Transport.UDP)
+                .sipMessageHandler(firstHandler)
+                .sipMessageHandler(secondHandler)
+                .build();
+
+        sipServer.runSync();
+    }
+
 }

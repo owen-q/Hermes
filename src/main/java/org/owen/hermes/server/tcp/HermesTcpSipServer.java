@@ -1,8 +1,7 @@
 package org.owen.hermes.server.tcp;
 
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandler;
 import io.netty.channel.ChannelOption;
+import org.owen.hermes.bootstrap.ChannelHandler;
 import org.owen.hermes.bootstrap.NettySipHandler;
 import org.owen.hermes.stub.SipServer;
 import org.slf4j.Logger;
@@ -31,7 +30,7 @@ public class HermesTcpSipServer extends SipServer{
         TcpServer reactorTcpServer =
                 TcpServer.create(opts -> opts
                         .afterChannelInit((channel -> {
-                            channel.pipeline().addFirst("hi", new TestChannelInit());
+                            channel.pipeline().addFirst("hi", new ChannelHandler());
                         }))
                         .host(serverHost)
                         .port(serverPort)
@@ -72,67 +71,5 @@ public class HermesTcpSipServer extends SipServer{
             BlockingNettyContext blockingNettyContext = this.reactorTcpServer.start(this.serverHandler);
 
         }
-
-    }
-}
-
-
-class TestChannelInit implements ChannelInboundHandler{
-
-    @Override
-    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        ctx.fireChannelRegistered();
-    }
-
-    @Override
-    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        ctx.fireChannelUnregistered();
-    }
-
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("channel active");
-        ctx.fireChannelActive();
-    }
-
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        ctx.fireChannelInactive();
-    }
-
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println("channel read");
-        ctx.fireChannelRead(msg);
-    }
-
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        ctx.fireChannelReadComplete();
-    }
-
-    @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        ctx.fireUserEventTriggered(evt);
-    }
-
-    @Override
-    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        ctx.fireChannelWritabilityChanged();
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        ctx.fireExceptionCaught(cause);
-    }
-
-    @Override
-    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("handler add ");
-    }
-
-    @Override
-    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("handler removed ");
     }
 }
