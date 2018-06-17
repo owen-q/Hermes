@@ -1,10 +1,14 @@
 package org.owen.hermes.bootstrap.server;
 
+import io.netty.handler.ssl.SslContext;
 import org.owen.hermes.bootstrap.NettySipHandler;
+import org.owen.hermes.bootstrap.ServerStarterElement;
+import org.owen.hermes.bootstrap.SipMessageConsumer;
 import org.owen.hermes.bootstrap.SipMessageHandler;
 import org.owen.hermes.model.Transport;
 import org.owen.hermes.server.tcp.HermesTcpSipServer;
 import org.owen.hermes.server.udp.HermesUdpSipServer;
+import org.owen.hermes.server.websocket.HermesWebsocketSipServer;
 import org.owen.hermes.stub.SipServer;
 import org.owen.hermes.util.CheckUtil;
 import org.slf4j.Logger;
@@ -22,8 +26,11 @@ public class ServerFactory {
     private String serverListenHost = "";
     private int serverListenPort = 0;
     private Transport serverTransport = Transport.NONE;
-    private boolean isSSL = false;
+
+    private SslContext sslContext = null;
+
     private List<SipMessageHandler> sipMessageHandlerList = null;
+    private SipMessageConsumer sipMessageConsumer = null;
 
     public ServerFactory() {
         this.sipMessageHandlerList = new ArrayList<>();
@@ -44,17 +51,34 @@ public class ServerFactory {
         return this;
     }
 
-    public ServerFactory ssl(boolean isSSL){
-        this.isSSL = isSSL;
+    public ServerFactory sslContext(SslContext sslContext){
+        if(sslContext != null && this.serverTransport == Transport.UDP)
+            throw new IllegalArgumentException("Cannot assign SSL Options for udp server");
+
+        this.sslContext = sslContext;
+        return this;
+    }
+
+    public ServerFactory options(){
         return this;
     }
 
     public ServerFactory sipMessageHandler(SipMessageHandler sipMessageHandler){
+        /*
+        if(!(sipMessageHandler instanceof Function))
+            throw new IllegalArgumentException("SipMessageHandler must implements Function interface");
+        */
+
         if(!this.sipMessageHandlerList.contains(sipMessageHandler))
             this.sipMessageHandlerList.add(sipMessageHandler);
         else
             throw new IllegalArgumentException("Duplicated sipMessageHandler");
 
+        return this;
+    }
+
+    public ServerFactory sipMessageConsumer(SipMessageConsumer sipMessageConsumer) {
+        this.sipMessageConsumer = sipMessageConsumer;
         return this;
     }
 
@@ -67,31 +91,36 @@ public class ServerFactory {
         CheckUtil.checkNotZero(this.serverListenPort, "ServerListenPort");
         CheckUtil.checkNotEqual(this.serverTransport, Transport.NONE, "ServerTransport");
         CheckUtil.checkCollectionNotEmpty(this.sipMessageHandlerList, "SipMessageHandlerList");
+        CheckUtil.checkNotNull(this.sipMessageConsumer, SipMessageConsumer.class.getName());
         // TODO: handler chaining type check
 
-        SipServer sipServer = null;
         NettySipHandler nettySipHandler = null;
+        ServerStarterElement serverStarterElement = null;
+        SipServer sipServer = null;
 
-        nettySipHandler = NettySipHandler.create(this.sipMessageHandlerList);
+        nettySipHandler = NettySipHandler.create(this.serverTransport, this.sipMessageHandlerList, this.sipMessageConsumer);
+
+        serverStarterElement = new ServerStarterElement(this.serverListenHost, this.serverListenPort, this.sslContext, nettySipHandler);
 
         if(Transport.TCP.equals(this.serverTransport)){
-            sipServer = HermesTcpSipServer.create(this.serverListenHost, this.serverListenPort, nettySipHandler);
+            sipServer = HermesTcpSipServer.create(serverStarterElement);
         }
         else if(Transport.UDP.equals(this.serverTransport)){
             // TODO:
-            sipServer = HermesUdpSipServer.create(this.serverListenHost, this.serverListenPort, nettySipHandler);
+            sipServer = HermesUdpSipServer.create(serverStarterElement);
         }
         else if(Transport.TLS.equals(this.serverTransport)){
             // TODO:
-//            sipServer = new HermesTcpSipServer(sipMessageHandler, true);
+            sipServer = HermesTcpSipServer.create(serverStarterElement);
         }
         else if(Transport.WS.equals(this.serverTransport)){
             // TODO:
-//            sipServer=new WebsocketSipServer(sipMessageHandler, false);
+            sipServer = HermesWebsocketSipServer.create(serverStarterElement);
         }
         else if(Transport.WSS.equals(this.serverTransport)){
             // TODO:
 //            sipServer=new WebsocketSipServer(sipMessageHandler, true);
+            sipServer = HermesWebsocketSipServer.create(serverStarterElement);
         }
         else{
 

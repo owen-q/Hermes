@@ -35,6 +35,7 @@ public class ChannelHandler implements ChannelInboundHandler {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         System.out.println("channel read");
+
         ctx.fireChannelRead(msg);
     }
 
@@ -61,11 +62,15 @@ public class ChannelHandler implements ChannelInboundHandler {
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         System.out.println("handler add ");
+//        ctx.handler().handlerAdded(ctx);
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         System.out.println("handler removed ");
+//        ctx.handler().handlerRemoved(ctx);
     }
 }
 
+
+//class TestHttpHandler implements NettyConnector

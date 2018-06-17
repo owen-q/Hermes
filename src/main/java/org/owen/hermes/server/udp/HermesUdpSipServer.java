@@ -2,6 +2,7 @@ package org.owen.hermes.server.udp;
 
 import org.owen.hermes.bootstrap.ChannelHandler;
 import org.owen.hermes.bootstrap.NettySipHandler;
+import org.owen.hermes.bootstrap.ServerStarterElement;
 import org.owen.hermes.stub.SipServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ public class HermesUdpSipServer extends SipServer{
         this.nettySipHandler = nettySipHandler;
     }
 
-    public static HermesUdpSipServer create(String udpServerListenHost, int udpServerListenPort, NettySipHandler nettySipHandler){
+    public static HermesUdpSipServer create(ServerStarterElement serverStarterElement){
         // TODO: Implement UDP Server
 
         /*
@@ -72,12 +73,13 @@ public class HermesUdpSipServer extends SipServer{
         */
 
         UdpServer reactorUdpServer = UdpServer.create(opts -> opts
-                .host(udpServerListenHost)
-                .port(udpServerListenPort)
+                .host(serverStarterElement.serverListenHost)
+                .port(serverStarterElement.serverListenPort)
                 .afterChannelInit(channel -> channel.pipeline().addFirst("hi", new ChannelHandler()))
+                .sslContext(serverStarterElement.sslContext)
         );
 
-        return new HermesUdpSipServer(reactorUdpServer, nettySipHandler);
+        return new HermesUdpSipServer(reactorUdpServer, serverStarterElement.nettySipHandler);
     }
 
     @Override

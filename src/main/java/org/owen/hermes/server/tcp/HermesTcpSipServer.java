@@ -3,6 +3,7 @@ package org.owen.hermes.server.tcp;
 import io.netty.channel.ChannelOption;
 import org.owen.hermes.bootstrap.ChannelHandler;
 import org.owen.hermes.bootstrap.NettySipHandler;
+import org.owen.hermes.bootstrap.ServerStarterElement;
 import org.owen.hermes.stub.SipServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ public class HermesTcpSipServer extends SipServer{
     private Logger logger = LoggerFactory.getLogger(HermesTcpSipServer.class);
 
     private TcpServer reactorTcpServer = null;
+//    private SSLContext sslContext = null;
     private NettySipHandler serverHandler = null;
 
     //BiFunction<NettyInbound, NettyOutbound, ? extends Publisher<Void>>
@@ -24,31 +26,28 @@ public class HermesTcpSipServer extends SipServer{
         this.serverHandler = serverHandler;
     }
 
-    public static HermesTcpSipServer create(String serverHost, int serverPort,
-                                            NettySipHandler serverHandler ){
-
+    public static HermesTcpSipServer create(ServerStarterElement serverStarterElement){
         TcpServer reactorTcpServer =
                 TcpServer.create(opts -> opts
                         .afterChannelInit((channel -> {
                             channel.pipeline().addFirst("hi", new ChannelHandler());
                         }))
-                        .host(serverHost)
-                        .port(serverPort)
+                        .host(serverStarterElement.serverListenHost)
+                        .port(serverStarterElement.serverListenPort)
                         .option(ChannelOption.AUTO_READ,true) // turn on for handling SIP
                         .option(ChannelOption.SO_KEEPALIVE, false)
                         .option(ChannelOption.TCP_NODELAY, true)
                         .option(ChannelOption.SO_LINGER, 0 )
                         .option(ChannelOption.SO_REUSEADDR, true)
-
+                        .sslContext(serverStarterElement.sslContext)
                 );
 
-        return new HermesTcpSipServer(reactorTcpServer, serverHandler);
+        return new HermesTcpSipServer(reactorTcpServer, serverStarterElement.nettySipHandler);
     }
 
     public void close(){
         if(logger.isDebugEnabled())
             logger.debug("Stop server...");
-
 //        this.connectedResult.dispose();
     }
 
