@@ -23,10 +23,9 @@ public class DefaultSipRequest extends DefaultSipMessage {
     }
 
     public void setContent(Object content, String contentType) {
-//        this.checkContentType(contentType);
-
         try{
             ContentTypeHeader contentTypeHeader=null;
+
             contentTypeHeader=(ContentTypeHeader)this.message.getHeader("Content-Type");
             contentTypeHeader.setContentType("application");
             contentTypeHeader.setContentSubType("sdp");

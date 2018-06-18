@@ -1,8 +1,9 @@
 package org.owen.hermes.server.websocket;
 
-import org.owen.hermes.bootstrap.ChannelHandler;
-import org.owen.hermes.bootstrap.NettySipHandler;
 import org.owen.hermes.bootstrap.ServerStarterElement;
+import org.owen.hermes.bootstrap.handler.HermesAbstractSipHandler;
+import org.owen.hermes.bootstrap.channel.HermesChannelInboundHandler;
+import org.owen.hermes.model.Transport;
 import org.owen.hermes.stub.SipServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,11 +16,11 @@ import reactor.ipc.netty.tcp.BlockingNettyContext;
 public class HermesWebsocketSipServer extends SipServer{
     private Logger logger = LoggerFactory.getLogger(HermesWebsocketSipServer.class);
     private HttpServer reactorNettyHttpServer = null;
-    private NettySipHandler nettySipHandler = null;
+    private HermesAbstractSipHandler hermesAbstractSipHandler = null;
 
-    private HermesWebsocketSipServer(HttpServer reactorNettyHttpServer, NettySipHandler nettySipHandler) {
+    private HermesWebsocketSipServer(HttpServer reactorNettyHttpServer, HermesAbstractSipHandler hermesAbstractSipHandler) {
         this.reactorNettyHttpServer = reactorNettyHttpServer;
-        this.nettySipHandler = nettySipHandler;
+        this.hermesAbstractSipHandler = hermesAbstractSipHandler;
     }
 
     public static HermesWebsocketSipServer create(ServerStarterElement serverStarterElement){
@@ -28,18 +29,22 @@ public class HermesWebsocketSipServer extends SipServer{
         httpServer = HttpServer.create(
                 opts -> opts
                         .afterChannelInit(channel -> {
-                            channel.pipeline().addFirst("hi", new ChannelHandler());
+                            if(serverStarterElement.sslContext == null)
+                                channel.pipeline().addFirst(Transport.WS.getValue(), new HermesChannelInboundHandler());
+                            else
+                                channel.pipeline().addFirst(Transport.WSS.getValue(), new HermesChannelInboundHandler());
                         })
                         .host(serverStarterElement.serverListenHost)
                         .port(serverStarterElement.serverListenPort)
                         .sslContext(serverStarterElement.sslContext)
         );
+
         /*
                 .newHandler((in, out) -> out.sendWebsocket((i, o) -> o.sendString(
                         Mono.just("test"))));
                         */
 
-        return new HermesWebsocketSipServer(httpServer, serverStarterElement.nettySipHandler);
+        return new HermesWebsocketSipServer(httpServer, serverStarterElement.hermesAbstractSipHandler);
     }
 
     // TODO: Refactoring duplicated logic for start server
@@ -50,7 +55,7 @@ public class HermesWebsocketSipServer extends SipServer{
                 logger.debug("Start server as sync");
 
             // Make blocking server
-            BlockingNettyContext blockingNettyContext = this.reactorNettyHttpServer.start(this.nettySipHandler);
+            BlockingNettyContext blockingNettyContext = this.reactorNettyHttpServer.start(this.hermesAbstractSipHandler);
 
             blockingNettyContext.installShutdownHook();
             blockingNettyContext.getContext().onClose().block();
@@ -59,7 +64,7 @@ public class HermesWebsocketSipServer extends SipServer{
             if(logger.isDebugEnabled())
                 logger.debug("Start server as async");
 
-            BlockingNettyContext blockingNettyContext = this.reactorNettyHttpServer.start(this.nettySipHandler);
+            BlockingNettyContext blockingNettyContext = this.reactorNettyHttpServer.start(this.hermesAbstractSipHandler);
 
         }
     }

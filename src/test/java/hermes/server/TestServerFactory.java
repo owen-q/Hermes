@@ -13,9 +13,9 @@ import org.owen.hermes.stub.SipServer;
  * Created by owen_q on 2018. 6. 13..
  */
 public class TestServerFactory {
-//    private String host="10.0.1.202";
+    private String host="10.0.1.202";
 //    private String host = "10.0.8.2";
-    private String host = "192.168.0.12";
+//    private String host = "192.168.50.32";
 
     private int port = 10000;
 
@@ -76,17 +76,17 @@ public class TestServerFactory {
     }
 
     @Test
-    public void testCreateTcpServer() throws Exception{
+    public void testCreateTcpServerWithRegister() throws Exception{
         ServerFactory serverFactory = new ServerFactory();
         SipServer sipServer = null;
 
         SipMessageHandler<String, String> firstHandler = (msg)->{
-//            return msg + "\n First handler!";
+//            return msg + "\n First channel!";
             return msg;
         };
 
         SipMessageHandler<String, String> secondHandler = (msg)->{
-//            return msg + "\n Second handler!!!";
+//            return msg + "\n Second channel!!!";
             return msg;
         };
 
@@ -111,11 +111,11 @@ public class TestServerFactory {
         SipServer sipServer = null;
 
         SipMessageHandler<String, String> firstHandler = (msg)->{
-            return msg + "\n First handler!";
+            return msg + "\n First channel!";
         };
 
         SipMessageHandler<String, String> secondHandler = (msg)->{
-            return msg + "\n Second handler!!!";
+            return msg + "\n Second channel!!!";
         };
 
         sipServer=serverFactory
@@ -133,11 +133,11 @@ public class TestServerFactory {
         SipServer sipServer = null;
 
         SipMessageHandler<String, String> firstHandler = (msg)->{
-            return msg + "\n First handler!";
+            return msg + "\n First channel!";
         };
 
         SipMessageHandler<String, String> secondHandler = (msg)->{
-            return msg + "\n Second handler!!!";
+            return msg + "\n Second channel!!!";
         };
 
         SipMessageConsumer<String> consumerHandler = msg -> System.out.println(msg);

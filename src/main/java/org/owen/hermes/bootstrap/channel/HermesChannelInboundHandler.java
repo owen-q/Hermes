@@ -1,34 +1,57 @@
-package org.owen.hermes.bootstrap;
+package org.owen.hermes.bootstrap.channel;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandler;
+import org.owen.hermes.core.ConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.InetSocketAddress;
 
 /**
  * Created by owen_q on 2018. 6. 16..
  */
-public class ChannelHandler implements ChannelInboundHandler {
-    private Logger logger = LoggerFactory.getLogger(ChannelHandler.class);
+public class HermesChannelInboundHandler implements ChannelInboundHandler {
+    private Logger logger = LoggerFactory.getLogger(HermesChannelInboundHandler.class);
+    private ConnectionManager connectionManager = ConnectionManager.getInstance();
+
+    private InetSocketAddress inetSocketAddress = null;
+    private String remoteHost = "";
+    private int remotePort = 0;
+    private String transport = "";
+
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        inetSocketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
+
+        // Register client connection
+        remoteHost = inetSocketAddress.getHostString();
+        remotePort = inetSocketAddress.getPort();
+        transport = ctx.name();
+
+        connectionManager.addConnection(remoteHost, remotePort, transport, ctx);
+
         ctx.fireChannelRegistered();
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        connectionManager.deleteConnection(remoteHost, remotePort, transport);
+        inetSocketAddress = null;
         ctx.fireChannelUnregistered();
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("channel active");
+
         ctx.fireChannelActive();
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("channel inactive");
         ctx.fireChannelInactive();
     }
 
@@ -61,16 +84,13 @@ public class ChannelHandler implements ChannelInboundHandler {
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("handler add ");
-//        ctx.handler().handlerAdded(ctx);
+        System.out.println("channel add ");
+//        ctx.channel().handlerAdded(ctx);
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("handler removed ");
-//        ctx.handler().handlerRemoved(ctx);
+        System.out.println("channel removed ");
+//        ctx.channel().handlerRemoved(ctx);
     }
 }
-
-
-//class TestHttpHandler implements NettyConnector

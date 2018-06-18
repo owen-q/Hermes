@@ -35,13 +35,26 @@ public class ConnectionManager {
             logger.debug("Add Client :: " + key);
     }
 
-    public ChannelHandlerContext getConnection(String host, int port, Transport transport){
+    public void addConnection(String host, int port, String transport, ChannelHandlerContext channelHandlerContext){
+        String key = createConnectionKey(host, port, transport);
+
+        this.clientMap.put(key, channelHandlerContext);
+
+        if(logger.isDebugEnabled())
+            logger.debug("Add Client :: " + key);
+    }
+
+    public ChannelHandlerContext getConnection(String host, int port, String transport){
         String key= createConnectionKey(host, port, transport);
 
         return this.clientMap.get(key);
     }
 
     public void deleteConnection(String host, int port, Transport transport){
+        deleteConnection(host, port, transport.getValue());
+    }
+
+    public void deleteConnection(String host, int port, String transport){
         String key= createConnectionKey(host, port, transport);
 
         if(this.clientMap.containsKey(key)){
@@ -64,7 +77,6 @@ public class ConnectionManager {
     private String createConnectionKey(String host, int port, Transport transport){
         return String.format("%s:%d:%s", host, port, transport.getValue());
     }
-
 
     private static class SingletonHolder{
         private static final ConnectionManager INSTANCE=new ConnectionManager();

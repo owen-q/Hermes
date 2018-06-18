@@ -1,8 +1,9 @@
 package org.owen.hermes.server.udp;
 
-import org.owen.hermes.bootstrap.ChannelHandler;
-import org.owen.hermes.bootstrap.NettySipHandler;
+import org.owen.hermes.bootstrap.channel.HermesChannelInboundHandler;
+import org.owen.hermes.bootstrap.handler.HermesAbstractSipHandler;
 import org.owen.hermes.bootstrap.ServerStarterElement;
+import org.owen.hermes.model.Transport;
 import org.owen.hermes.stub.SipServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,17 +20,17 @@ public class HermesUdpSipServer extends SipServer{
     private int udpServerListenPort = 0;
 
     private UdpServer reactorUdpServer = null;
-    private NettySipHandler nettySipHandler = null;
+    private HermesAbstractSipHandler hermesAbstractSipHandler = null;
 
-    public HermesUdpSipServer(UdpServer reactorUdpServer, NettySipHandler nettySipHandler) {
+    public HermesUdpSipServer(UdpServer reactorUdpServer, HermesAbstractSipHandler hermesAbstractSipHandler) {
         this.reactorUdpServer = reactorUdpServer;
-        this.nettySipHandler = nettySipHandler;
+        this.hermesAbstractSipHandler = hermesAbstractSipHandler;
     }
 
-    private HermesUdpSipServer(String udpServerListenHost, int udpServerListenPort, NettySipHandler nettySipHandler) {
+    private HermesUdpSipServer(String udpServerListenHost, int udpServerListenPort, HermesAbstractSipHandler hermesAbstractSipHandler) {
         this.udpServerListenHost = udpServerListenHost;
         this.udpServerListenPort = udpServerListenPort;
-        this.nettySipHandler = nettySipHandler;
+        this.hermesAbstractSipHandler = hermesAbstractSipHandler;
     }
 
     public static HermesUdpSipServer create(ServerStarterElement serverStarterElement){
@@ -75,11 +76,11 @@ public class HermesUdpSipServer extends SipServer{
         UdpServer reactorUdpServer = UdpServer.create(opts -> opts
                 .host(serverStarterElement.serverListenHost)
                 .port(serverStarterElement.serverListenPort)
-                .afterChannelInit(channel -> channel.pipeline().addFirst("hi", new ChannelHandler()))
+                .afterChannelInit(channel -> channel.pipeline().addFirst(Transport.UDP.getValue(), new HermesChannelInboundHandler()))
                 .sslContext(serverStarterElement.sslContext)
         );
 
-        return new HermesUdpSipServer(reactorUdpServer, serverStarterElement.nettySipHandler);
+        return new HermesUdpSipServer(reactorUdpServer, serverStarterElement.hermesAbstractSipHandler);
     }
 
     @Override
@@ -90,7 +91,7 @@ public class HermesUdpSipServer extends SipServer{
                 logger.debug("Start server as sync");
 
             // Make blocking server
-            BlockingNettyContext blockingNettyContext = this.reactorUdpServer.start(this.nettySipHandler);
+            BlockingNettyContext blockingNettyContext = this.reactorUdpServer.start(this.hermesAbstractSipHandler);
 
             blockingNettyContext.installShutdownHook();
             blockingNettyContext.getContext().onClose().block();
@@ -99,7 +100,7 @@ public class HermesUdpSipServer extends SipServer{
             if(logger.isDebugEnabled())
                 logger.debug("Start server as async");
 
-            BlockingNettyContext blockingNettyContext = this.reactorUdpServer.start(this.nettySipHandler);
+            BlockingNettyContext blockingNettyContext = this.reactorUdpServer.start(this.hermesAbstractSipHandler);
 
         }
     }

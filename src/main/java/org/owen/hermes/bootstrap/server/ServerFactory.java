@@ -1,10 +1,10 @@
 package org.owen.hermes.bootstrap.server;
 
 import io.netty.handler.ssl.SslContext;
-import org.owen.hermes.bootstrap.NettySipHandler;
 import org.owen.hermes.bootstrap.ServerStarterElement;
 import org.owen.hermes.bootstrap.SipMessageConsumer;
 import org.owen.hermes.bootstrap.SipMessageHandler;
+import org.owen.hermes.bootstrap.handler.HermesAbstractSipHandler;
 import org.owen.hermes.model.Transport;
 import org.owen.hermes.server.tcp.HermesTcpSipServer;
 import org.owen.hermes.server.udp.HermesUdpSipServer;
@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Created by owen_q on 2018. 6. 13..
@@ -63,6 +64,13 @@ public class ServerFactory {
         return this;
     }
 
+
+    public ServerFactory sipMessageHandler(Function<Object, Object> sipMessageHandler){
+        logger.debug("Register Function<Object, Object> sipHandlers");
+        return this;
+    }
+
+
     public ServerFactory sipMessageHandler(SipMessageHandler sipMessageHandler){
         /*
         if(!(sipMessageHandler instanceof Function))
@@ -92,15 +100,17 @@ public class ServerFactory {
         CheckUtil.checkNotEqual(this.serverTransport, Transport.NONE, "ServerTransport");
         CheckUtil.checkCollectionNotEmpty(this.sipMessageHandlerList, "SipMessageHandlerList");
         CheckUtil.checkNotNull(this.sipMessageConsumer, SipMessageConsumer.class.getName());
-        // TODO: handler chaining type check
+        // TODO: channel chaining type check
 
-        NettySipHandler nettySipHandler = null;
+        HermesAbstractSipHandler hermesAbstractSipHandler = null;
         ServerStarterElement serverStarterElement = null;
         SipServer sipServer = null;
 
-        nettySipHandler = NettySipHandler.create(this.serverTransport, this.sipMessageHandlerList, this.sipMessageConsumer);
 
-        serverStarterElement = new ServerStarterElement(this.serverListenHost, this.serverListenPort, this.sslContext, nettySipHandler);
+        hermesAbstractSipHandler = HermesAbstractSipHandler.create(this.serverTransport, this.sipMessageHandlerList, this.sipMessageConsumer);
+
+        serverStarterElement = new ServerStarterElement(this.serverListenHost, this.serverListenPort, this.sslContext, hermesAbstractSipHandler);
+
 
         if(Transport.TCP.equals(this.serverTransport)){
             sipServer = HermesTcpSipServer.create(serverStarterElement);

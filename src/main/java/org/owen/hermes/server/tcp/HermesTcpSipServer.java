@@ -1,9 +1,10 @@
 package org.owen.hermes.server.tcp;
 
 import io.netty.channel.ChannelOption;
-import org.owen.hermes.bootstrap.ChannelHandler;
-import org.owen.hermes.bootstrap.NettySipHandler;
 import org.owen.hermes.bootstrap.ServerStarterElement;
+import org.owen.hermes.bootstrap.handler.HermesAbstractSipHandler;
+import org.owen.hermes.bootstrap.channel.HermesChannelInboundHandler;
+import org.owen.hermes.model.Transport;
 import org.owen.hermes.stub.SipServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +19,10 @@ public class HermesTcpSipServer extends SipServer{
 
     private TcpServer reactorTcpServer = null;
 //    private SSLContext sslContext = null;
-    private NettySipHandler serverHandler = null;
+    private HermesAbstractSipHandler serverHandler = null;
 
     //BiFunction<NettyInbound, NettyOutbound, ? extends Publisher<Void>>
-    private HermesTcpSipServer(TcpServer reactorTcpServer, NettySipHandler serverHandler) {
+    private HermesTcpSipServer(TcpServer reactorTcpServer, HermesAbstractSipHandler serverHandler) {
         this.reactorTcpServer = reactorTcpServer;
         this.serverHandler = serverHandler;
     }
@@ -30,7 +31,12 @@ public class HermesTcpSipServer extends SipServer{
         TcpServer reactorTcpServer =
                 TcpServer.create(opts -> opts
                         .afterChannelInit((channel -> {
-                            channel.pipeline().addFirst("hi", new ChannelHandler());
+                            if(serverStarterElement.sslContext == null)
+                                channel.pipeline().addFirst(Transport.TCP.getValue(), new HermesChannelInboundHandler());
+                            else
+                                channel.pipeline().addFirst(Transport.TLS.getValue(), new HermesChannelInboundHandler());
+
+//                            channel.pipeline().addFirst(Transport.TCP.getValue(), new HermesMessageConverter());
                         }))
                         .host(serverStarterElement.serverListenHost)
                         .port(serverStarterElement.serverListenPort)
@@ -42,7 +48,7 @@ public class HermesTcpSipServer extends SipServer{
                         .sslContext(serverStarterElement.sslContext)
                 );
 
-        return new HermesTcpSipServer(reactorTcpServer, serverStarterElement.nettySipHandler);
+        return new HermesTcpSipServer(reactorTcpServer, serverStarterElement.hermesAbstractSipHandler);
     }
 
     public void close(){

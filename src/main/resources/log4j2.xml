@@ -29,7 +29,6 @@
         <!--</Logger>-->
             <Root level="debug">
                 <AppenderRef ref="ASYNC_CONSOLE"/>
-                <!--<AppenderRef ref="LogApp" />-->
             </Root>
         </Loggers>
 </Configuration>
