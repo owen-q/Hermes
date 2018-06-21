@@ -44,7 +44,7 @@ public class DefaultSipRequest extends DefaultSipMessage {
             int indexOfSlash = contentType.indexOf("/");
             if (indexOfSlash != -1) {
                 /*
-                if (!JainSipUtils.IANA_ALLOWED_CONTENT_TYPES.contains(contentType.substring(0, indexOfSlash))) {
+                if (!JainSipUtils.IANA_ALLOWED_CONTENT_TYPES.isConnectionExist(contentType.substring(0, indexOfSlash))) {
                     throw new IllegalArgumentException("the given content type " + contentType + " is not allowed");
                 }
                 */

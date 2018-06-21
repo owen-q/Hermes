@@ -3,6 +3,7 @@ package org.owen.hermes.bootstrap.channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandler;
 import org.owen.hermes.core.ConnectionManager;
+import org.owen.hermes.model.RemoteAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,23 +21,27 @@ public class HermesChannelInboundHandler implements ChannelInboundHandler {
     private int remotePort = 0;
     private String transport = "";
 
+    private RemoteAddress getRemoteAddress(ChannelHandlerContext ctx){
+        RemoteAddress remoteAddress = new RemoteAddress();
+        InetSocketAddress inetSocketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
+
+        remoteAddress.host = inetSocketAddress.getHostString();
+        remoteAddress.port = inetSocketAddress.getPort();
+        remoteAddress.transport = ctx.name();
+
+        return remoteAddress;
+    }
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        inetSocketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
-
-        // Register client connection
-        remoteHost = inetSocketAddress.getHostString();
-        remotePort = inetSocketAddress.getPort();
-        transport = ctx.name();
-
-        connectionManager.addConnection(remoteHost, remotePort, transport, ctx);
-
+        connectionManager.addConnection(ctx);
         ctx.fireChannelRegistered();
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+
+        //TODO: Refactoring
         connectionManager.deleteConnection(remoteHost, remotePort, transport);
         inetSocketAddress = null;
         ctx.fireChannelUnregistered();

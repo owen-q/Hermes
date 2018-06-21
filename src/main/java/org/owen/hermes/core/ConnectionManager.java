@@ -5,6 +5,7 @@ import org.owen.hermes.model.Transport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,48 +27,45 @@ public class ConnectionManager {
         return SingletonHolder.INSTANCE;
     }
 
-    public void addConnection(String host, int port, Transport transport, ChannelHandlerContext channelHandlerContext){
-        String key = createConnectionKey(host, port, transport);
+    public void addConnection(ChannelHandlerContext channelHandlerContext){
+        String connectionKey = "";
+        connectionKey = createConnectionKey(channelHandlerContext);
 
-        this.clientMap.put(key, channelHandlerContext);
-
-        if(logger.isDebugEnabled())
-            logger.debug("Add Client :: " + key);
+        this.clientMap.put(connectionKey, channelHandlerContext);
     }
 
-    public void addConnection(String host, int port, String transport, ChannelHandlerContext channelHandlerContext){
-        String key = createConnectionKey(host, port, transport);
-
-        this.clientMap.put(key, channelHandlerContext);
-
-        if(logger.isDebugEnabled())
-            logger.debug("Add Client :: " + key);
+    public boolean isConnectionExist(String host, int port, String transport){
+        String connectionKey = createConnectionKey(host, port, transport);
+        return this.clientMap.containsKey(connectionKey);
     }
 
-    public ChannelHandlerContext getConnection(String host, int port, String transport){
-        String key= createConnectionKey(host, port, transport);
+    public void deleteConnection(ChannelHandlerContext channelHandlerContext){
+        String connectionKey = createConnectionKey(channelHandlerContext);
 
-        return this.clientMap.get(key);
-    }
-
-    public void deleteConnection(String host, int port, Transport transport){
-        deleteConnection(host, port, transport.getValue());
-    }
-
-    public void deleteConnection(String host, int port, String transport){
-        String key= createConnectionKey(host, port, transport);
-
-        if(this.clientMap.containsKey(key)){
+        if(this.clientMap.containsKey(connectionKey)){
             logger.info("Current Clients:: {}", this.clientMap.size());
 
-            this.clientMap.remove(key);
+            this.clientMap.remove(connectionKey);
+
             if(logger.isDebugEnabled())
-                logger.debug("Delete Client success :: {}", key);
+                logger.debug("Delete Client success :: {}", connectionKey);
         }
         else{
             if(logger.isDebugEnabled())
-                logger.info("Delete Client fail :: {}", key);
+                logger.info("Delete Client fail :: {}", connectionKey);
         }
+    }
+
+    public String createConnectionKey(ChannelHandlerContext channelHandlerContext){
+        InetSocketAddress inetSocketAddress = (InetSocketAddress) channelHandlerContext.channel();
+        String remoteHost = "";
+        int remotePort = 0;
+        String transport = channelHandlerContext.name();
+
+        remoteHost = inetSocketAddress.getHostString();
+        remotePort = inetSocketAddress.getPort();
+
+        return new StringBuilder().append(remoteHost).append(":").append(remotePort).append(":").append(transport).toString();
     }
 
     private String createConnectionKey(String host, int port, String transport){
@@ -79,6 +77,6 @@ public class ConnectionManager {
     }
 
     private static class SingletonHolder{
-        private static final ConnectionManager INSTANCE=new ConnectionManager();
+        private static final ConnectionManager INSTANCE = new ConnectionManager();
     }
 }
