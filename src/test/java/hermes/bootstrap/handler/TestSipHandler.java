@@ -1,7 +1,5 @@
-package hermes;
+package hermes.bootstrap.handler;
 
-import gov.nist.javax.sip.message.SIPMessage;
-import gov.nist.javax.sip.message.SIPResponse;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,17 +15,17 @@ import reactor.core.publisher.Mono;
  */
 public class TestSipHandler {
     private Logger logger = LoggerFactory.getLogger(TestSipHandler.class);
-    private SipServer sipServer=null;
+    private SipServer sipServer = null;
+
+    private SipMessageHandler sampleSipMessageHandler = null;
 
     @Before
     public void beforeTest(){
+
     }
 
     @Test
-    public void implementSipMessageHandler(){
-        SIPMessage sipMessage = new SIPResponse();
-        String name = "";
-
+    public void testCreateSipMessageHandlerImpl(){
         Mono<String> testMono=Mono.just("ping");
 
         // Then Implementation

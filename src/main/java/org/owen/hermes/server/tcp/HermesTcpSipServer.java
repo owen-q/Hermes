@@ -18,10 +18,8 @@ public class HermesTcpSipServer extends SipServer{
     private Logger logger = LoggerFactory.getLogger(HermesTcpSipServer.class);
 
     private TcpServer reactorTcpServer = null;
-//    private SSLContext sslContext = null;
     private HermesAbstractSipHandler serverHandler = null;
 
-    //BiFunction<NettyInbound, NettyOutbound, ? extends Publisher<Void>>
     private HermesTcpSipServer(TcpServer reactorTcpServer, HermesAbstractSipHandler serverHandler) {
         this.reactorTcpServer = reactorTcpServer;
         this.serverHandler = serverHandler;
@@ -35,17 +33,15 @@ public class HermesTcpSipServer extends SipServer{
                                 channel.pipeline().addFirst(Transport.TCP.getValue(), new HermesChannelInboundHandler());
                             else
                                 channel.pipeline().addFirst(Transport.TLS.getValue(), new HermesChannelInboundHandler());
-
-//                            channel.pipeline().addFirst(Transport.TCP.getValue(), new HermesMessageConverter());
                         }))
                         .host(serverStarterElement.serverListenHost)
                         .port(serverStarterElement.serverListenPort)
+                        .sslContext(serverStarterElement.sslContext)
                         .option(ChannelOption.AUTO_READ,true) // turn on for handling SIP
                         .option(ChannelOption.SO_KEEPALIVE, false)
                         .option(ChannelOption.TCP_NODELAY, true)
                         .option(ChannelOption.SO_LINGER, 0 )
                         .option(ChannelOption.SO_REUSEADDR, true)
-                        .sslContext(serverStarterElement.sslContext)
                 );
 
         return new HermesTcpSipServer(reactorTcpServer, serverStarterElement.hermesAbstractSipHandler);
@@ -54,6 +50,7 @@ public class HermesTcpSipServer extends SipServer{
     public void close(){
         if(logger.isDebugEnabled())
             logger.debug("Stop server...");
+
 //        this.connectedResult.dispose();
     }
 

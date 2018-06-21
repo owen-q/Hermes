@@ -36,6 +36,9 @@ public class HermesHttpSipHandler extends HermesAbstractSipHandler<HttpServerReq
         server.subscribe();
 
 
+
+//        receiveString(httpServerRequest).map(receivedStr -> );
+
         // Convert String to DefaultSipMessage
 
         Mono<Void> result = httpServerResponse.sendWebsocket((i, o) -> {

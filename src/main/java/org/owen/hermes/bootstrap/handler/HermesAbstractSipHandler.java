@@ -5,7 +5,6 @@ import org.owen.hermes.bootstrap.SipMessageConsumer;
 import org.owen.hermes.bootstrap.SipMessageHandler;
 import org.owen.hermes.core.ConnectionManager;
 import org.owen.hermes.model.Transport;
-import org.owen.hermes.sip.wrapper.message.DefaultSipMessage;
 import org.owen.hermes.util.lambda.PrintConsumer;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -53,18 +52,8 @@ public abstract class HermesAbstractSipHandler<INBOUND extends NettyInbound, OUT
         return new HermesChannelSipHandler(sipMessageHandlerList, sipMessageConsumer);
     }
 
-//    // 여기가 원래 람다가 구현되는 부분 ...
-//    // Connection 생기면 1번만 수행된다
-//    @Override
-//    public Publisher<Void> apply(INBOUND inbound, OUTBOUND outbound) {
-//        System.out.println("In NettyHandler apply()");
-//        return chain(inbound);
-//    }
-
-    protected DefaultSipMessage convert(INBOUND inbound){
-        Flux<String> stringFlux = inbound.receive().asString();
-
-        stringFlux.map(rawSipMessage -> hermesMessageConverter.deserialize(inbound, rawSipMessage));
+    protected Flux<String> receiveString(INBOUND inbound){
+        return inbound.receive().asString();
     }
 
     // TODO: Change input parameter to {@link org.owen.hermes.sip.wrapper.message.DefaultSipMessage}

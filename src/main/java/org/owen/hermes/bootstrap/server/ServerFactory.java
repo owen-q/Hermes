@@ -111,25 +111,15 @@ public class ServerFactory {
 
         serverStarterElement = new ServerStarterElement(this.serverListenHost, this.serverListenPort, this.sslContext, hermesAbstractSipHandler);
 
-
-        if(Transport.TCP.equals(this.serverTransport)){
+        if(Transport.TCP.equals(this.serverTransport) || Transport.TLS.equals(this.serverTransport)){
             sipServer = HermesTcpSipServer.create(serverStarterElement);
         }
         else if(Transport.UDP.equals(this.serverTransport)){
             // TODO:
             sipServer = HermesUdpSipServer.create(serverStarterElement);
         }
-        else if(Transport.TLS.equals(this.serverTransport)){
+        else if(Transport.WS.equals(this.serverTransport) || Transport.WSS.equals(this.serverTransport)){
             // TODO:
-            sipServer = HermesTcpSipServer.create(serverStarterElement);
-        }
-        else if(Transport.WS.equals(this.serverTransport)){
-            // TODO:
-            sipServer = HermesWebsocketSipServer.create(serverStarterElement);
-        }
-        else if(Transport.WSS.equals(this.serverTransport)){
-            // TODO:
-//            sipServer=new WebsocketSipServer(sipMessageHandler, true);
             sipServer = HermesWebsocketSipServer.create(serverStarterElement);
         }
         else{

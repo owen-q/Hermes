@@ -4,9 +4,7 @@ import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
 import org.owen.hermes.model.ServerInfo;
-import org.owen.hermes.sip.B2BUAHelper;
 import org.owen.hermes.sip.wrapper.message.DefaultSipRequest;
-import org.owen.hermes.sip.wrapper.message.Sessionable;
 
 import javax.sip.address.Address;
 import javax.sip.header.ContactHeader;
@@ -20,8 +18,7 @@ import java.util.ListIterator;
 /**
  * Created by dongqlee on 2018. 3. 19..
  */
-public class ProxySipRequest extends DefaultSipRequest implements Sessionable{
-    private B2BUAHelper b2BUAHelper=null;
+public class ProxySipRequest extends DefaultSipRequest {
     private ServerInfo serverInfo=null;
 
     public ProxySipRequest(SIPMessage jainSipRequest) {

@@ -84,13 +84,13 @@ public class HermesChannelInboundHandler implements ChannelInboundHandler {
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("channel add ");
+        System.out.println("channel add");
 //        ctx.channel().handlerAdded(ctx);
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("channel removed ");
+        System.out.println("channel removed");
 //        ctx.channel().handlerRemoved(ctx);
     }
 }

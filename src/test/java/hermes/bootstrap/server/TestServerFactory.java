@@ -1,4 +1,4 @@
-package hermes.server;
+package hermes.bootstrap.server;
 
 import org.junit.Rule;
 import org.junit.Test;

@@ -60,6 +60,9 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpasyncclient
     testCompile group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: '4.1.3'
+
+    // https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.19.0'
 }
 
 sourceSets{

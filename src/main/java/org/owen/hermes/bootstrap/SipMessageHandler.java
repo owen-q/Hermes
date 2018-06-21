@@ -7,7 +7,6 @@ import java.util.function.Function;
  */
 @FunctionalInterface
 public interface SipMessageHandler<T, R> extends Function<T, R>{
-
     // TODO: deprecated
     SipMessageHandler INSTANCE = (msg) -> {return "Empty instance";};
 
