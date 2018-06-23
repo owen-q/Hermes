@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.sip.header.*;
 import javax.sip.message.Request;
+import javax.sip.message.Response;
 import java.net.InetSocketAddress;
 import java.text.ParseException;
 
@@ -28,7 +29,7 @@ import java.text.ParseException;
  * Base class for LB, Proxy SipMessage
  * Created by dongqlee on 2018. 4. 26..
  */
-public class DefaultSipMessage {
+public abstract class DefaultSipMessage {
     private Logger logger= LoggerFactory.getLogger(DefaultSipMessage.class);
 
     protected SipMessageFactory sipMessageFactory;
@@ -37,9 +38,13 @@ public class DefaultSipMessage {
 
     // TODO: Refactoring.
     // 모든 DefaultSipMessage에서 connectionManager를 참조해야 하는가?
-    protected ConnectionManager connectionManager=ConnectionManager.getInstance();
+    protected ConnectionManager connectionManager = ConnectionManager.getInstance();
 
-    public static DefaultSipMessage DEFUALT_MESSAGE=new DefaultSipMessage();
+//    public static DefaultSipMessage DEFUALT_MESSAGE = new DefaultSipMessage();
+
+    public static DefaultSipMessage empty(){
+        return DefaultSipMessageEmpty.getInstance();
+    }
 
     public DefaultSipMessage(){
 
@@ -257,14 +262,13 @@ public class DefaultSipMessage {
         return this.message.getRecordRouteHeaders();
     }
 
+    protected Response createResponse(int responseCode, Request baseRequest){
+
+        return null;
+    }
+
     @Override
     public String toString() {
         return this.message.toString();
-    }
-
-    public Object clone() {
-        SIPMessage clonedSipMessage=(SIPMessage) this.message.clone();
-
-        return new DefaultSipMessage(clonedSipMessage);
     }
 }

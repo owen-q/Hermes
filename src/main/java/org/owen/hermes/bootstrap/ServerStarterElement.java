@@ -15,8 +15,8 @@ public class ServerStarterElement {
 
     public HermesAbstractSipHandler hermesAbstractSipHandler = null;
 
-    public List<SipMessageHandler> sipMessageHandlerList;
-    public SipMessageConsumer sipMessageConsumer = null;
+    public List<SipHandler> sipHandlerList;
+    public SipConsumer sipConsumer = null;
 
     public ServerStarterElement(String serverListenHost, int serverListenPort, SslContext sslContext, HermesAbstractSipHandler hermesAbstractSipHandler) {
         this.serverListenHost = serverListenHost;

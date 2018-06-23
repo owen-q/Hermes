@@ -1,10 +1,12 @@
 package org.owen.hermes.bootstrap.handler;
 
 import org.owen.hermes.bootstrap.HermesMessageConverter;
-import org.owen.hermes.bootstrap.SipMessageConsumer;
-import org.owen.hermes.bootstrap.SipMessageHandler;
+import org.owen.hermes.bootstrap.SipConsumer;
+import org.owen.hermes.bootstrap.SipHandler;
 import org.owen.hermes.core.ConnectionManager;
 import org.owen.hermes.model.Transport;
+import org.owen.hermes.sip.wrapper.message.DefaultSipMessage;
+import org.owen.hermes.sip.wrapper.message.DefaultSipMessageEmpty;
 import org.owen.hermes.util.lambda.PrintConsumer;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -15,7 +17,6 @@ import reactor.ipc.netty.NettyOutbound;
 
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * Created by owen_q on 2018. 6. 14..
@@ -27,29 +28,31 @@ public abstract class HermesAbstractSipHandler<INBOUND extends NettyInbound, OUT
 
     private ConnectionManager connectionManager = null;
 
-    private List<SipMessageHandler> sipMessageHandlerList = null;
-    private SipMessageConsumer sipMessageConsumer = null;
+    private List<SipHandler> sipHandlerList = null;
+    private SipConsumer sipConsumer = null;
 
     private HermesMessageConverter hermesMessageConverter = null;
 
     protected HermesAbstractSipHandler() {
     }
 
-    protected HermesAbstractSipHandler(List<SipMessageHandler> sipMessageHandlerList, SipMessageConsumer sipMessageConsumer) {
-        this.sipMessageHandlerList = sipMessageHandlerList;
-        this.sipMessageConsumer = sipMessageConsumer;
+    protected HermesAbstractSipHandler(List<SipHandler> sipHandlerList, SipConsumer sipConsumer) {
+        this.sipHandlerList = sipHandlerList;
+        this.sipConsumer = sipConsumer;
         this.connectionManager = ConnectionManager.getInstance();
-        this.hermesMessageConverter = HermesMessageConverter.getInstance();
+//        this.hermesMessageConverter = HermesMessageConverter.getInstance();
+        this.hermesMessageConverter = new HermesMessageConverter();
     }
 
-    public static HermesAbstractSipHandler create(Transport transport, List<SipMessageHandler> sipMessageHandlerList, SipMessageConsumer sipMessageConsumer){
+    public static HermesAbstractSipHandler create(Transport transport, List<SipHandler> sipHandlerList, SipConsumer sipConsumer){
         if(transport.equals(Transport.WS) || transport.equals(Transport.WSS))
-            return new HermesHttpSipHandler(sipMessageHandlerList, sipMessageConsumer);
+            return new HermesHttpSipHandler(sipHandlerList, sipConsumer);
         else if(transport.equals(Transport.UDP))
             // TODO;
             System.out.println("Todo implement NettyUdpSipHandler");
 
-        return new HermesChannelSipHandler(sipMessageHandlerList, sipMessageConsumer);
+        // FOR TCP | TLS
+        return new HermesChannelSipHandler(sipHandlerList, sipConsumer);
     }
 
     protected Flux<String> receiveString(INBOUND inbound){
@@ -58,23 +61,21 @@ public abstract class HermesAbstractSipHandler<INBOUND extends NettyInbound, OUT
 
     // TODO: Change input parameter to {@link org.owen.hermes.sip.wrapper.message.DefaultSipMessage}
     protected Publisher<Void> chain(INBOUND inbound){
-        Flux<String> stringFlux = inbound.receive().asString();
+        // read string
+        Flux<String> readStrFromChain = inbound.receive().asString();
 
-        for(int idx=0; idx<sipMessageHandlerList.size(); idx++){
-            stringFlux = stringFlux.map(this.sipMessageHandlerList.get(idx));
+        // change DefaultSipMessage
+        Flux<DefaultSipMessage> sipFlux = readStrFromChain.map(hermesMessageConverter::convertStringToDefaultSipMessage).filter(defaultSipMessage -> defaultSipMessage instanceof DefaultSipMessageEmpty);
+
+        for(int idx = 0; idx< sipHandlerList.size(); idx++){
+            sipFlux = sipFlux.map(this.sipHandlerList.get(idx));
         }
 
-        if(this.sipMessageConsumer != null)
-            stringFlux.subscribe(this.sipMessageConsumer);
+        if(this.sipConsumer != null)
+            sipFlux.subscribe(this.sipConsumer);
         else
-            stringFlux.subscribe(PrintConsumer.INSTANCE);
+            sipFlux.subscribe(PrintConsumer.INSTANCE);
 
         return Flux.never();
-    }
-
-    @Override
-    public <V> BiFunction<INBOUND, OUTBOUND, V> andThen(Function<? super Publisher<Void>, ? extends V> after) {
-        System.out.println("And then ~?");
-        return null;
     }
 }

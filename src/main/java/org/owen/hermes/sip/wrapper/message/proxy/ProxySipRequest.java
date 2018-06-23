@@ -32,7 +32,7 @@ public class ProxySipRequest extends DefaultSipRequest {
     public ProxySipResponse createResponse(int statusCode, String reasonPhrase) {
         try {
             Request request = (Request)this.message;
-            Response response = this.sipMessageFactory.createResponse(statusCode, request);
+            Response response = createResponse(statusCode, request);
             if (reasonPhrase != null) {
                 response.setReasonPhrase(reasonPhrase);
             }

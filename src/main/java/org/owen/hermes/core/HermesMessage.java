@@ -12,14 +12,14 @@ import java.util.Map;
 public class HermesMessage {
     private Logger logger = LoggerFactory.getLogger(HermesMessage.class);
 
+    private DefaultSipMessage sourceDefaultSipMessage = null;
+    private ClientConnection sourceClientConnection = null;
 
-    private DefaultSipMessage defaultSipMessage = null;
+    private DefaultSipMessage targetDefaultSipMessage = null;
+    private ClientConnection targetClientConnection = null;
 
     private Map<String, Object> attributes = null;
 
-    public HermesMessage(DefaultSipMessage defaultSipMessage) {
-        this.defaultSipMessage = defaultSipMessage;
-    }
 
     public void addAttribute(String key, Object value){
         this.attributes.put(key, value);

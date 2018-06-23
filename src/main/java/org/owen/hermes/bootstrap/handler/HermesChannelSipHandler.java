@@ -1,7 +1,7 @@
 package org.owen.hermes.bootstrap.handler;
 
-import org.owen.hermes.bootstrap.SipMessageConsumer;
-import org.owen.hermes.bootstrap.SipMessageHandler;
+import org.owen.hermes.bootstrap.SipConsumer;
+import org.owen.hermes.bootstrap.SipHandler;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +16,8 @@ import java.util.List;
 public class HermesChannelSipHandler extends HermesAbstractSipHandler<NettyInbound, NettyOutbound> {
     private Logger logger = LoggerFactory.getLogger(HermesChannelSipHandler.class);
 
-    HermesChannelSipHandler(List<SipMessageHandler> sipMessageHandlerList, SipMessageConsumer sipMessageConsumer) {
-        super(sipMessageHandlerList, sipMessageConsumer);
+    HermesChannelSipHandler(List<SipHandler> sipHandlerList, SipConsumer sipConsumer) {
+        super(sipHandlerList, sipConsumer);
     }
 
     @Override

@@ -12,15 +12,16 @@ public class Proxy {
     private Logger logger = LoggerFactory.getLogger(Proxy.class);
 
     public static void main(String[] args) {
-        RegisterHandler registerHandler = new RegisterHandler();
-
         ServerFactory serverFactory = new ServerFactory();
         serverFactory
                 .host("10.0.1.202")
                 .port(10000)
                 .transport(Transport.TCP);
 //                .sipMessageHandler(registerHandler::handleRegister)
-//                .sipMessageConsumer(testSendHandler);
+//                .sipConsumer(testSendHandler);
+
+
+
     }
 
 }

@@ -2,8 +2,8 @@ package org.owen.hermes.bootstrap.server;
 
 import io.netty.handler.ssl.SslContext;
 import org.owen.hermes.bootstrap.ServerStarterElement;
-import org.owen.hermes.bootstrap.SipMessageConsumer;
-import org.owen.hermes.bootstrap.SipMessageHandler;
+import org.owen.hermes.bootstrap.SipConsumer;
+import org.owen.hermes.bootstrap.SipHandler;
 import org.owen.hermes.bootstrap.handler.HermesAbstractSipHandler;
 import org.owen.hermes.model.Transport;
 import org.owen.hermes.server.tcp.HermesTcpSipServer;
@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * Created by owen_q on 2018. 6. 13..
@@ -30,11 +29,11 @@ public class ServerFactory {
 
     private SslContext sslContext = null;
 
-    private List<SipMessageHandler> sipMessageHandlerList = null;
-    private SipMessageConsumer sipMessageConsumer = null;
+    private List<SipHandler> sipHandlerList = null;
+    private SipConsumer sipConsumer = null;
 
     public ServerFactory() {
-        this.sipMessageHandlerList = new ArrayList<>();
+        this.sipHandlerList = new ArrayList<>();
     }
 
     public ServerFactory host(String serverListenHost){
@@ -64,29 +63,29 @@ public class ServerFactory {
         return this;
     }
 
-
+    /*
     public ServerFactory sipMessageHandler(Function<Object, Object> sipMessageHandler){
         logger.debug("Register Function<Object, Object> sipHandlers");
         return this;
     }
+    */
 
-
-    public ServerFactory sipMessageHandler(SipMessageHandler sipMessageHandler){
+    public ServerFactory sipMessageHandler(SipHandler sipHandler){
         /*
-        if(!(sipMessageHandler instanceof Function))
-            throw new IllegalArgumentException("SipMessageHandler must implements Function interface");
+        if(!(sipHandler instanceof Function))
+            throw new IllegalArgumentException("SipHandler must implements Function interface");
         */
 
-        if(!this.sipMessageHandlerList.contains(sipMessageHandler))
-            this.sipMessageHandlerList.add(sipMessageHandler);
+        if(!this.sipHandlerList.contains(sipHandler))
+            this.sipHandlerList.add(sipHandler);
         else
-            throw new IllegalArgumentException("Duplicated sipMessageHandler");
+            throw new IllegalArgumentException("Duplicated sipHandler");
 
         return this;
     }
 
-    public ServerFactory sipMessageConsumer(SipMessageConsumer sipMessageConsumer) {
-        this.sipMessageConsumer = sipMessageConsumer;
+    public ServerFactory sipMessageConsumer(SipConsumer sipConsumer) {
+        this.sipConsumer = sipConsumer;
         return this;
     }
 
@@ -94,12 +93,12 @@ public class ServerFactory {
      *
      * Build {@link SipServer} using required parameters
      */
-    public SipServer build(){
+    public SipServer build() throws IllegalArgumentException{
         CheckUtil.checkEmptyString(this.serverListenHost, "ServerListenHost");
         CheckUtil.checkNotZero(this.serverListenPort, "ServerListenPort");
         CheckUtil.checkNotEqual(this.serverTransport, Transport.NONE, "ServerTransport");
-        CheckUtil.checkCollectionNotEmpty(this.sipMessageHandlerList, "SipMessageHandlerList");
-        CheckUtil.checkNotNull(this.sipMessageConsumer, SipMessageConsumer.class.getName());
+        CheckUtil.checkCollectionNotEmpty(this.sipHandlerList, "SipMessageHandlerList");
+        CheckUtil.checkNotNull(this.sipConsumer, SipConsumer.class.getName());
         // TODO: channel chaining type check
 
         HermesAbstractSipHandler hermesAbstractSipHandler = null;
@@ -107,7 +106,7 @@ public class ServerFactory {
         SipServer sipServer = null;
 
 
-        hermesAbstractSipHandler = HermesAbstractSipHandler.create(this.serverTransport, this.sipMessageHandlerList, this.sipMessageConsumer);
+        hermesAbstractSipHandler = HermesAbstractSipHandler.create(this.serverTransport, this.sipHandlerList, this.sipConsumer);
 
         serverStarterElement = new ServerStarterElement(this.serverListenHost, this.serverListenPort, this.sslContext, hermesAbstractSipHandler);
 

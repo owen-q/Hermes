@@ -25,7 +25,8 @@ public class HermesMessageConverter {
 
     private StringMsgParser stringMsgParser = null;
 
-    private HermesMessageConverter() {
+    // TODO: decide sharable or instance
+    public HermesMessageConverter() {
         this.stringMsgParser = new StringMsgParser();
     }
 
@@ -33,11 +34,8 @@ public class HermesMessageConverter {
         return Holder.INSTANCE;
     }
 
+    // TODO
     public HermesMessage convertStringToHermesMessage(String sipRawMessage){
-        return null;
-    }
-
-    public HermesMessage convertDefaultsipmessageToHermesMessage(DefaultSipMessage defaultSipMessage){
         return null;
     }
 
@@ -48,8 +46,21 @@ public class HermesMessageConverter {
                 .map(jainSipMessage -> generateGeneralSipMessage(jainSipMessage)).get();
     }
 
-    private SIPMessage generateJainSipMessage(String strSipMessage) throws ParseException {
-        return stringMsgParser.parseSIPMessage(strSipMessage.getBytes(), true, false, null);
+    public DefaultSipMessage convertStringToDefaultSipMessage(String rawSipMessage) {
+        SIPMessage sipMessage = generateJainSipMessage(rawSipMessage);
+        return generateGeneralSipMessage(sipMessage);
+    }
+
+    private SIPMessage generateJainSipMessage(String strSipMessage)  {
+        SIPMessage sipMessage = null;
+
+        try{
+            sipMessage = stringMsgParser.parseSIPMessage(strSipMessage.getBytes(), true, false, null);
+        }
+        catch (ParseException pe){
+            ;
+        }
+        return sipMessage;
     }
 
     // TODO: Refactoring -> 'proxy' app으로 이동
@@ -88,6 +99,9 @@ public class HermesMessageConverter {
     private DefaultSipMessage generateGeneralSipMessage(SIPMessage jainSipMessage){
         DefaultSipMessage defaultSipMessage = null;
 //
+        if(jainSipMessage == null)
+            return DefaultSipMessage.empty();
+
         if(jainSipMessage instanceof SIPRequest){
             defaultSipMessage = new DefaultSipRequest(jainSipMessage);
         }
@@ -101,5 +115,4 @@ public class HermesMessageConverter {
     private static class Holder {
         private static HermesMessageConverter INSTANCE = new HermesMessageConverter();
     }
-
 }

@@ -40,9 +40,7 @@ public class HermesChannelInboundHandler implements ChannelInboundHandler {
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-
-        //TODO: Refactoring
-        connectionManager.deleteConnection(remoteHost, remotePort, transport);
+        connectionManager.deleteConnection(ctx);
         inetSocketAddress = null;
         ctx.fireChannelUnregistered();
     }
