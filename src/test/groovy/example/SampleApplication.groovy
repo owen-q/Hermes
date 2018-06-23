@@ -55,21 +55,6 @@ class SampleApplication extends Specification{
 
                 SIPMessage message = defaultSipMessage.getRawSipMessage()
 
-                /**
-                 * Request:
-                 *
-                 * // Client -> proxy (Direct Connection)
-                 *  1) - request uri 정보를 읽어와서 client connection을 뒤지고, 해당 socket에 전송한다
-                 *
-                 * // Client -> LB -> Proxy
-                 *  2) - request uri의 정보를 읽어와서 client connection을 못찾으면,
-                 *  top via의 정보를 읽어서 해당 노드의 정보가 LB인지 확인한다.
-                 *  LB와 일치하면, 해당 LB에게 전송한다.
-                 *
-                 * Response:
-                 *  -> Via를 뒤져서, 해당 connection을 직접 가지고 있으면 전송, 아니면 lb에게 전송
-                 *  -> Via를 뒤져서,
-                 */
                 if(defaultSipMessage.getRawSipMessage() instanceof SIPRequest){
                     RouteList routeList = defaultSipMessage.getRawSipMessage().getRouteHeaders();
 
