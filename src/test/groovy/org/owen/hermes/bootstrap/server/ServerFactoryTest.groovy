@@ -67,7 +67,7 @@ class ServerFactoryTest extends Specification {
                 .sipMessageConsumer(givenSipMessageConsumer)
                 .build()
 
-        sipServer.run(true)
+        sipServer.run(false)
 
         then:
         notThrown(IllegalArgumentException)

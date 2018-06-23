@@ -1,4 +1,4 @@
-package org.owen.hermes
+package example
 
 import gov.nist.javax.sip.address.SipUri
 import gov.nist.javax.sip.header.RouteList
@@ -48,15 +48,13 @@ class SampleApplication extends Specification{
             void send(DefaultSipMessage defaultSipMessage) {
                 ConnectionManager connectionManager = ConnectionManager.getInstance()
 
-                String remoteHost="";
-                int remotePort=0;
-                String remoteTransport="";
-                ChannelHandlerContext targetCtx=null;
+                String remoteHost = "";
+                int remotePort = 0;
+                String remoteTransport = "";
+                ChannelHandlerContext targetCtx = null;
 
                 SIPMessage message = defaultSipMessage.getRawSipMessage()
 
-                // 연결된 LB가 없으면, SIPMessage에 있는 정보로 전송한다
-                // TODO:: PostProcessor로 옮긴다.
                 /**
                  * Request:
                  *
@@ -73,8 +71,6 @@ class SampleApplication extends Specification{
                  *  -> Via를 뒤져서,
                  */
                 if(defaultSipMessage.getRawSipMessage() instanceof SIPRequest){
-                    // Request
-
                     RouteList routeList = defaultSipMessage.getRawSipMessage().getRouteHeaders();
 
                     if(routeList != null && routeList.size() !=0){
@@ -110,8 +106,6 @@ class SampleApplication extends Specification{
                     remoteTransport = topVia.getTransport().toLowerCase();
                 }
 
-                String remoteInfo = String.format("%s:%d", remoteHost, remotePort);
-
                 targetCtx = connectionManager.getConnection(remoteHost, remotePort, remoteTransport);
 
                 if(targetCtx != null){
@@ -129,21 +123,20 @@ class SampleApplication extends Specification{
                     }
                 }
                 else {
-                    logger.info(String.format("[Fail][%s] Send message\n%s\nfailed cause : %s", remoteInfo, this.message, "targetCtx is null"));
                 }
-
-                println "Send SipMessage: \n " + defaultSipMessage
             }
 
             @Override
             void accept(DefaultSipMessage defaultSipMessage) {
 
-                // Do Logging in single point
+                // Do Some stuffs here
+
+                // Send Message to target!
                 send(defaultSipMessage)
             }
         }
 
-        String givenServerListenHost = "10.0.8.2"
+        String givenServerListenHost = "127.0.0.1"
         int givenServerListenPort = 10000
         Transport givenServerTransport = Transport.TCP
 
@@ -157,16 +150,6 @@ class SampleApplication extends Specification{
                 .sipMessageConsumer(sipConsumer).build()
 
         then:
-        sipServer.runSync()
+        sipServer.runAsync()
     }
-
-    /*
-    def "run sipClient"() {
-        given:
-
-        when:
-
-        then:
-    }
-    */
 }
