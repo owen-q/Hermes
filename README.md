@@ -19,7 +19,7 @@ Just create some methods for handling SIP Messages and Start Hermes!
 
 
 ## How to Run
-1. Download jar from release 
+1. Download jar from release (https://github.com/owen-q/Hermes/releases) 
 2. Add dependencies
 3. Create your SIP Handlers & Consumers 
 ```java
