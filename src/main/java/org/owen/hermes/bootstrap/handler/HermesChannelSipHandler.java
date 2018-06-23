@@ -22,6 +22,7 @@ public class HermesChannelSipHandler extends HermesAbstractSipHandler<NettyInbou
 
     @Override
     public Publisher<Void> apply(NettyInbound nettyInbound, NettyOutbound nettyOutbound) {
+        logger.debug("In apply()");
         return chain(nettyInbound);
     }
 }
