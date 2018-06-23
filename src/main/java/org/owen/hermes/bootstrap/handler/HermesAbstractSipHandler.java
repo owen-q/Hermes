@@ -61,12 +61,13 @@ public abstract class HermesAbstractSipHandler<INBOUND extends NettyInbound, OUT
 
     // TODO: Change input parameter to {@link org.owen.hermes.sip.wrapper.message.DefaultSipMessage}
     protected Publisher<Void> chain(INBOUND inbound){
-        System.out.println("In chain");
         // read string
         Flux<String> readStrFromChain = inbound.receive().asString();
 
-        // change DefaultSipMessage
-        Flux<DefaultSipMessage> sipFlux = readStrFromChain.map(hermesMessageConverter::convertStringToDefaultSipMessage).filter(defaultSipMessage -> !(defaultSipMessage instanceof DefaultSipMessageEmpty));
+        // convert string to {@link org.owen.hermes.sip.wrapper.message.DefaultSipMessage}
+        Flux<DefaultSipMessage> sipFlux = readStrFromChain
+                .map(strSipMessage -> hermesMessageConverter.convertStringToDefaultSipMessage(inbound.remoteAddress(),strSipMessage))
+                .filter(defaultSipMessage -> !(defaultSipMessage instanceof DefaultSipMessageEmpty));
 
         for(int idx = 0; idx< sipHandlerList.size(); idx++){
             sipFlux = sipFlux.map(this.sipHandlerList.get(idx));

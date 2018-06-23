@@ -6,16 +6,14 @@ import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.parser.StringMsgParser;
 import org.owen.hermes.core.HermesMessage;
-import org.owen.hermes.model.RemoteAddress;
 import org.owen.hermes.sip.wrapper.message.DefaultSipMessage;
 import org.owen.hermes.sip.wrapper.message.DefaultSipRequest;
 import org.owen.hermes.sip.wrapper.message.DefaultSipResponse;
-import org.owen.hermes.util.lambda.StreamHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
 import java.text.ParseException;
-import java.util.Optional;
 
 /**
  * Created by owen_q on 2018. 6. 18..
@@ -39,11 +37,20 @@ public class HermesMessageConverter {
         return null;
     }
 
-    public DefaultSipMessage convertStringToDefaultSipMessage(RemoteAddress remoteAddress, String rawSipMessage) {
-        return Optional.ofNullable(rawSipMessage)
-                .map(StreamHelper.wrapper(strSipMessage -> generateJainSipMessage(rawSipMessage)))
-                .map(StreamHelper.wrapper(jainSipMessage -> updateMessage(remoteAddress, jainSipMessage)))
-                .map(jainSipMessage -> generateGeneralSipMessage(jainSipMessage)).get();
+    public DefaultSipMessage convertStringToDefaultSipMessage(InetSocketAddress inetSocketAddress, String rawSipMessage) {
+        SIPMessage sipMessage = null;
+        DefaultSipMessage defaultSipMessage = null;
+
+        try{
+            sipMessage = generateJainSipMessage(rawSipMessage);
+            sipMessage = updateMessage(inetSocketAddress, sipMessage);
+            defaultSipMessage = generateGeneralSipMessage(sipMessage);
+        }
+        catch (ParseException pe){
+            defaultSipMessage = DefaultSipMessage.empty();
+        }
+
+        return defaultSipMessage;
     }
 
     public DefaultSipMessage convertStringToDefaultSipMessage(String rawSipMessage) {
@@ -63,15 +70,14 @@ public class HermesMessageConverter {
         return sipMessage;
     }
 
-    // TODO: Refactoring -> 'proxy' app으로 이동
     /**
      * Set ServerReflexive address to Via 'rport', 'received'
-     * @param remoteAddress
+     * @param inetSocketAddress
      * @param jainSipMessage
      * @return
      * @throws ParseException
      */
-    private SIPMessage updateMessage(RemoteAddress remoteAddress, SIPMessage jainSipMessage) throws ParseException {
+    private SIPMessage updateMessage(InetSocketAddress inetSocketAddress, SIPMessage jainSipMessage) throws ParseException {
 
         if(jainSipMessage instanceof SIPRequest){
             ViaList viaList = jainSipMessage.getViaHeaders();
@@ -79,12 +85,12 @@ public class HermesMessageConverter {
             Via topViaHeader=(Via) viaList.getFirst();
 
             if (topViaHeader.getReceived() == null) {
-                String received = remoteAddress.host;
+                String received = inetSocketAddress.getHostString();
                 topViaHeader.setReceived(received);
             }
 
             if(topViaHeader.getRPort() == 0 || topViaHeader.getRPort() == -1) {
-                int rport = remoteAddress.port;
+                int rport = inetSocketAddress.getPort();
 
                 topViaHeader.setParameter("rport", rport+"");
             }
@@ -98,7 +104,7 @@ public class HermesMessageConverter {
 
     private DefaultSipMessage generateGeneralSipMessage(SIPMessage jainSipMessage){
         DefaultSipMessage defaultSipMessage = null;
-//
+
         if(jainSipMessage == null)
             return DefaultSipMessage.empty();
 

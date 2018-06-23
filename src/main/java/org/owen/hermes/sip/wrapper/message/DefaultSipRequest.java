@@ -97,13 +97,13 @@ public class DefaultSipRequest extends DefaultSipMessage {
     }
 
     public DefaultSipResponse createResponse(int responseCode) throws ParseException{
-        DefaultSipResponse defaultSipResponse=null;
-        Response response=null;
+        DefaultSipResponse defaultSipResponse = null;
+        Response response = null;
 
-        response=this.sipMessageFactory.createResponse(responseCode, this.sipReqeust);
+        response = this.sipMessageFactory.createResponse(responseCode, this.sipReqeust);
 //        response = createResponse(responseCode, this.sipReqeust);
 
-        defaultSipResponse=new DefaultSipResponse((SIPResponse) response);
+        defaultSipResponse = new DefaultSipResponse((SIPResponse) response);
 
         return defaultSipResponse;
     }

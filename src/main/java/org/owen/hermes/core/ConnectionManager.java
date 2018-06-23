@@ -56,6 +56,12 @@ public class ConnectionManager {
         }
     }
 
+    public ChannelHandlerContext getConnection(String host, int port, String transport){
+        String key= createConnectionKey(host, port, transport);
+
+        return this.clientMap.get(key);
+    }
+
     public String createConnectionKey(ChannelHandlerContext channelHandlerContext){
         InetSocketAddress inetSocketAddress = (InetSocketAddress) channelHandlerContext.channel().remoteAddress();
         String remoteHost = "";
