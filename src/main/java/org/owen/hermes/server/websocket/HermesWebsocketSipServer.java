@@ -39,15 +39,10 @@ public class HermesWebsocketSipServer extends SipServer{
                         .sslContext(serverStarterElement.sslContext)
         );
 
-        /*
-                .newHandler((in, out) -> out.sendWebsocket((i, o) -> o.sendString(
-                        Mono.just("test"))));
-                        */
-
         return new HermesWebsocketSipServer(httpServer, serverStarterElement.hermesAbstractSipHandler);
     }
 
-    // TODO: Refactoring duplicated logic for start server
+    // TODO: Refactoring duplicated logic for starting server
     @Override
     public void run(boolean isSync) throws Exception {
         if(isSync){
@@ -65,7 +60,6 @@ public class HermesWebsocketSipServer extends SipServer{
                 logger.debug("Start server as async");
 
             BlockingNettyContext blockingNettyContext = this.reactorNettyHttpServer.start(this.hermesAbstractSipHandler);
-
         }
     }
 }

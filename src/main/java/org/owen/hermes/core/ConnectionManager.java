@@ -15,9 +15,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConnectionManager {
     private Logger logger= LoggerFactory.getLogger(ConnectionManager.class);
 
-    // TODO: change ChannelHandlerContext to 'ClientConnection'
+    // TODO: change ChannelHandlerContext to {@link org.owen.hermes.core.ClientConnection}
     private Map<String, ChannelHandlerContext> clientMap = null;
 
+    // TODO: Using configuration value
     private final int MAX_CONNECTION_NUM = 10000;
     private ConnectionManager() {
         this.clientMap = new ConcurrentHashMap<>(MAX_CONNECTION_NUM);
@@ -43,8 +44,6 @@ public class ConnectionManager {
         String connectionKey = createConnectionKey(channelHandlerContext);
 
         if(this.clientMap.containsKey(connectionKey)){
-            logger.info("Current Clients:: {}", this.clientMap.size());
-
             this.clientMap.remove(connectionKey);
 
             if(logger.isDebugEnabled())

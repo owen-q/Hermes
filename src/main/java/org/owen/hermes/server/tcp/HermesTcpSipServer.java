@@ -51,7 +51,6 @@ public class HermesTcpSipServer extends SipServer{
         if(logger.isDebugEnabled())
             logger.debug("Stop server...");
 
-//        this.connectedResult.dispose();
     }
 
     @Override
