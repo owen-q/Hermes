@@ -135,6 +135,6 @@ class SampleApplication extends Specification{
                 .sipMessageConsumer(sipConsumer).build()
 
         then:
-        sipServer.runAsync()
+        sipServer.runSync()
     }
 }

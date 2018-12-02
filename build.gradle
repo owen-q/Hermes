@@ -1,5 +1,5 @@
 group 'org.owen'
-version '1.0.1'
+version '1.0.2'
 
 apply plugin: 'groovy'
 apply plugin: 'java'
@@ -18,10 +18,10 @@ ext{
     slf4jVersion = '1.7.21'
     log4j2Version = '2.5'
     commonsLogging = '1.2'
-    nettyVersion='4.1.25.Final'
-    reactorCoreVersion='3.1.8.RELEASE'
+    nettyVersion='4.1.32.Final'
+    reactorCoreVersion='3.2.3.RELEASE'
+    reactorNettyVersion='0.7.12.RELEASE'
 }
-
 
 dependencies {
     // junit
@@ -32,9 +32,8 @@ dependencies {
     testCompile("io.projectreactor:reactor-test:${reactorCoreVersion}")
 
     // reactor-netty
-    compile group: 'io.projectreactor.ipc', name: 'reactor-netty', version: '0.7.8.RELEASE'
-
-
+    compile("io.projectreactor.ipc:reactor-netty:${reactorNettyVersion}")
+//    compile group: 'io.projectreactor.ipc', name: 'reactor-netty', version: '0.7.12.RELEASE'
 
     compile("io.netty:netty-all:${nettyVersion}"){
         exclude group: 'log4j', module:'log4j'
@@ -53,6 +52,8 @@ dependencies {
 
     compile group: 'com.google.code.gson', name: 'gson', version: '2.8.3'
 
+    // https://mvnrepository.com/artifact/com.netflix.eureka/eureka-client
+    runtime group: 'com.netflix.eureka', name: 'eureka-client', version: '1.9.3'
 
     // https://mvnrepository.com/artifact/redis.clients/jedis
     testCompile group: 'redis.clients', name: 'jedis', version: '2.9.0'
@@ -62,10 +63,6 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpasyncclient
     testCompile group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: '4.1.3'
-
-    // https://mvnrepository.com/artifact/org.mockito/mockito-core
-//    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.19.0'
-
 
     // Spock
     testCompile('net.bytebuddy:byte-buddy:1.6.4')
@@ -115,37 +112,4 @@ artifacts {
     archives jar
     archives sourceJar
     archives javadocJar
-}
-
-publishing {
-    publications {
-
-        jar(MavenPublication) {
-            from components.java
-
-            artifact sourceJar {
-                classifier "sources"
-            }
-
-            artifact javadocJar {
-                classifier "javadoc"
-            }
-        }
-    }
-
-    repositories {
-        maven{
-            if (project.version.toString().contains('SNAPSHOT')){
-                url 'http://10.0.1.159:8081/repository/proxy-snapshot/'
-            }
-            else {
-                url 'http://10.0.1.159:8081/repository/proxy-release/'
-            }
-
-            credentials {
-                username System.getProperty('user')
-                password System.getProperty('password')
-            }
-        }
-    }
 }
