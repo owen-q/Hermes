@@ -1,19 +1,20 @@
 package org.owen.hermes.bootstrap.channel;
 
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandler;
+import java.net.InetSocketAddress;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.owen.hermes.core.ConnectionManager;
 import org.owen.hermes.model.RemoteAddress;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.net.InetSocketAddress;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandler;
 
 /**
  * Created by owen_q on 2018. 6. 16..
  */
+@Slf4j
 public class HermesChannelInboundHandler implements ChannelInboundHandler {
-    private Logger logger = LoggerFactory.getLogger(HermesChannelInboundHandler.class);
     private ConnectionManager connectionManager = ConnectionManager.getInstance();
 
     private InetSocketAddress inetSocketAddress = null;

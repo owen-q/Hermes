@@ -1,20 +1,31 @@
 package org.owen.hermes.sip.wrapper.message;
 
-import gov.nist.javax.sip.header.*;
+import java.net.InetSocketAddress;
+
+import javax.sip.header.CSeqHeader;
+import javax.sip.header.CallIdHeader;
+import javax.sip.header.FromHeader;
+import javax.sip.header.Header;
+import javax.sip.header.MaxForwardsHeader;
+import javax.sip.header.ToHeader;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
+
+import lombok.extern.slf4j.Slf4j;
+
+import org.owen.hermes.sip.util.SipMessageFactory;
+
+import gov.nist.javax.sip.header.Authorization;
+import gov.nist.javax.sip.header.RecordRouteList;
+import gov.nist.javax.sip.header.RouteList;
+import gov.nist.javax.sip.header.Via;
+import gov.nist.javax.sip.header.ViaList;
 import gov.nist.javax.sip.message.SIPMessage;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.util.CharsetUtil;
-import org.owen.hermes.sip.util.SipMessageFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.sip.header.*;
-import javax.sip.message.Request;
-import javax.sip.message.Response;
-import java.net.InetSocketAddress;
 
 /**
  *
@@ -22,8 +33,8 @@ import java.net.InetSocketAddress;
  * Base class for LB, Proxy SipMessage
  * Created by dongqlee on 2018. 4. 26..
  */
+@Slf4j
 public abstract class DefaultSipMessage {
-    private Logger logger= LoggerFactory.getLogger(DefaultSipMessage.class);
 
     protected SipMessageFactory sipMessageFactory;
     protected SIPMessage message;
@@ -130,9 +141,11 @@ public abstract class DefaultSipMessage {
             ChannelHandlerContext finalTargetCtx = targetCtx;
             cf.addListener((future) -> {
                 if (future.isSuccess())
-                    logger.info(String.format("[Success] Send message from %s to %s\n%s\n", finalTargetCtx.channel().localAddress(), finalTargetCtx.channel().remoteAddress(), this.message));
+                    log.info(String.format("[Success] Send message from %s to %s\n%s\n", finalTargetCtx.channel().localAddress(),
+                                         finalTargetCtx.channel().remoteAddress(), this.message));
                 else
-                    logger.info(String.format("[Fail] Send message from %s to %s\n%s\nfailed cause : %s", finalTargetCtx.channel().localAddress(), finalTargetCtx.channel().remoteAddress(), this.message, future.cause()));
+                    log.info(String.format("[Fail] Send message from %s to %s\n%s\nfailed cause : %s", finalTargetCtx.channel().localAddress(),
+                                         finalTargetCtx.channel().remoteAddress(), this.message, future.cause()));
             });
         }
     }

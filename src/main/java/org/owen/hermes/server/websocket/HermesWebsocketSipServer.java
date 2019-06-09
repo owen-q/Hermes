@@ -1,20 +1,21 @@
 package org.owen.hermes.server.websocket;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.owen.hermes.bootstrap.ServerStarterElement;
-import org.owen.hermes.bootstrap.handler.HermesAbstractSipHandler;
 import org.owen.hermes.bootstrap.channel.HermesChannelInboundHandler;
+import org.owen.hermes.bootstrap.handler.HermesAbstractSipHandler;
 import org.owen.hermes.model.Transport;
 import org.owen.hermes.stub.SipServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import reactor.ipc.netty.http.server.HttpServer;
 import reactor.ipc.netty.tcp.BlockingNettyContext;
 
 /**
  * Created by owen_q on 2018. 6. 17..
  */
+@Slf4j
 public class HermesWebsocketSipServer extends SipServer{
-    private Logger logger = LoggerFactory.getLogger(HermesWebsocketSipServer.class);
     private HttpServer reactorNettyHttpServer = null;
     private HermesAbstractSipHandler hermesAbstractSipHandler = null;
 
@@ -46,8 +47,8 @@ public class HermesWebsocketSipServer extends SipServer{
     @Override
     public void run(boolean isSync) throws Exception {
         if(isSync){
-            if(logger.isDebugEnabled())
-                logger.debug("Start server as sync");
+            if(log.isDebugEnabled())
+                log.debug("Start server as sync");
 
             // Make blocking server
             BlockingNettyContext blockingNettyContext = this.reactorNettyHttpServer.start(this.hermesAbstractSipHandler);
@@ -56,8 +57,8 @@ public class HermesWebsocketSipServer extends SipServer{
             blockingNettyContext.getContext().onClose().block();
         }
         else {
-            if(logger.isDebugEnabled())
-                logger.debug("Start server as async");
+            if(log.isDebugEnabled())
+                log.debug("Start server as async");
 
             BlockingNettyContext blockingNettyContext = this.reactorNettyHttpServer.start(this.hermesAbstractSipHandler);
         }

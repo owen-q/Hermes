@@ -1,6 +1,10 @@
 package org.owen.hermes.bootstrap.server;
 
-import io.netty.handler.ssl.SslContext;
+import java.util.ArrayList;
+import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.owen.hermes.bootstrap.ServerStarterElement;
 import org.owen.hermes.bootstrap.SipConsumer;
 import org.owen.hermes.bootstrap.SipHandler;
@@ -11,18 +15,14 @@ import org.owen.hermes.server.udp.HermesUdpSipServer;
 import org.owen.hermes.server.websocket.HermesWebsocketSipServer;
 import org.owen.hermes.stub.SipServer;
 import org.owen.hermes.util.CheckUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import io.netty.handler.ssl.SslContext;
 
 /**
  * Created by owen_q on 2018. 6. 13..
  */
+@Slf4j
 public class ServerFactory {
-    private Logger logger = LoggerFactory.getLogger(ServerFactory.class);
-
     private String serverListenHost = "";
     private int serverListenPort = 0;
     private Transport serverTransport = Transport.NONE;
@@ -65,7 +65,7 @@ public class ServerFactory {
 
     /*
     public ServerFactory sipMessageHandler(Function<Object, Object> sipMessageHandler){
-        logger.debug("Register Function<Object, Object> sipHandlers");
+        log.debug("Register Function<Object, Object> sipHandlers");
         return this;
     }
     */

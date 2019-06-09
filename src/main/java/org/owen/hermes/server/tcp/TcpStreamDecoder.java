@@ -1,28 +1,26 @@
 package org.owen.hermes.server.tcp;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.sip.header.ContentLengthHeader;
+
+import lombok.extern.slf4j.Slf4j;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.CharsetUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.sip.header.ContentLengthHeader;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by dongqlee on 2018. 3. 22..
  */
+@Slf4j
 public class TcpStreamDecoder extends ByteToMessageDecoder{
-
     private static AtomicInteger num=new AtomicInteger(0);
-
-    private Logger logger= LoggerFactory.getLogger(TcpStreamDecoder.class);
-
     private final int DEFAULT_HEADER_SIZE=3000;
     private final int DEFAULT_HEADER_LINE_SIZE=512;
     private final int DEFAULT_BODY_SIZE=6000;
@@ -45,7 +43,7 @@ public class TcpStreamDecoder extends ByteToMessageDecoder{
     private byte[] contentByte="Content-Length:".getBytes();
 
     public TcpStreamDecoder() {
-//        logger.info("%d",num.incrementAndGet());
+//        log.info("%d",num.incrementAndGet());
 
         pooledByteBufAllocator=new PooledByteBufAllocator(true);
         unpooledByteBufAllocator=new UnpooledByteBufAllocator(false);
@@ -57,7 +55,7 @@ public class TcpStreamDecoder extends ByteToMessageDecoder{
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        logger.info("In streamDecoder active!");
+        log.info("In streamDecoder active!");
     }
 
     /**
@@ -167,8 +165,8 @@ public class TcpStreamDecoder extends ByteToMessageDecoder{
                     try{
                         String strSipMessage=headerBuffer.toString(0, headerBuffer.writerIndex(), CharsetUtil.UTF_8) + bodyBuffer.toString(0, bodyBuffer.writerIndex(), CharsetUtil.UTF_8);
 
-                        if(logger.isDebugEnabled())
-                            logger.debug("Parsed sip wrapper:\n{}", strSipMessage);
+                        if(log.isDebugEnabled())
+                            log.debug("Parsed sip wrapper:\n{}", strSipMessage);
 
                         // reset used buffer
                         headerBuffer.clear();

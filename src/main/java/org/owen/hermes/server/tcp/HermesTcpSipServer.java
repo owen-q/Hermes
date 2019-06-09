@@ -1,22 +1,22 @@
 package org.owen.hermes.server.tcp;
 
-import io.netty.channel.ChannelOption;
+import lombok.extern.slf4j.Slf4j;
+
 import org.owen.hermes.bootstrap.ServerStarterElement;
-import org.owen.hermes.bootstrap.handler.HermesAbstractSipHandler;
 import org.owen.hermes.bootstrap.channel.HermesChannelInboundHandler;
+import org.owen.hermes.bootstrap.handler.HermesAbstractSipHandler;
 import org.owen.hermes.model.Transport;
 import org.owen.hermes.stub.SipServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import io.netty.channel.ChannelOption;
 import reactor.ipc.netty.tcp.BlockingNettyContext;
 import reactor.ipc.netty.tcp.TcpServer;
 
 /**
  * Created by dongqlee on 2018. 6. 13..
  */
+@Slf4j
 public class HermesTcpSipServer extends SipServer{
-    private Logger logger = LoggerFactory.getLogger(HermesTcpSipServer.class);
-
     private TcpServer reactorTcpServer = null;
     private HermesAbstractSipHandler serverHandler = null;
 
@@ -48,16 +48,16 @@ public class HermesTcpSipServer extends SipServer{
     }
 
     public void close(){
-        if(logger.isDebugEnabled())
-            logger.debug("Stop server...");
+        if(log.isDebugEnabled())
+            log.debug("Stop server...");
 
     }
 
     @Override
     public void run(boolean isSync) throws Exception {
         if(isSync){
-            if(logger.isDebugEnabled())
-                logger.debug("Start server as sync");
+            if(log.isDebugEnabled())
+                log.debug("Start server as sync");
 
             // Make blocking server
             BlockingNettyContext blockingNettyContext = this.reactorTcpServer.start(this.serverHandler);
@@ -66,8 +66,8 @@ public class HermesTcpSipServer extends SipServer{
             blockingNettyContext.getContext().onClose().block();
         }
         else {
-            if(logger.isDebugEnabled())
-                logger.debug("Start server as async");
+            if(log.isDebugEnabled())
+                log.debug("Start server as async");
 
             BlockingNettyContext blockingNettyContext = this.reactorTcpServer.start(this.serverHandler);
 

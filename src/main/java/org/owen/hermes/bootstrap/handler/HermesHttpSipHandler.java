@@ -1,24 +1,21 @@
 package org.owen.hermes.bootstrap.handler;
 
+import java.util.List;
+
 import org.owen.hermes.bootstrap.SipConsumer;
 import org.owen.hermes.bootstrap.SipHandler;
 import org.reactivestreams.Publisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import reactor.core.publisher.FluxProcessor;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.ReplayProcessor;
 import reactor.ipc.netty.http.server.HttpServerRequest;
 import reactor.ipc.netty.http.server.HttpServerResponse;
 
-import java.util.List;
-
 /**
  * Created by owen_q on 2018. 6. 17..
  */
 public class HermesHttpSipHandler extends HermesAbstractSipHandler<HttpServerRequest, HttpServerResponse> {
-    private Logger logger = LoggerFactory.getLogger(HermesHttpSipHandler.class);
-
     HermesHttpSipHandler(List<SipHandler> sipHandlerList, SipConsumer sipConsumer) {
         super(sipHandlerList, sipConsumer);
     }
@@ -46,7 +43,6 @@ public class HermesHttpSipHandler extends HermesAbstractSipHandler<HttpServerReq
             );
         });
 
-//        return chain(httpServerRequest);
         return result;
     }
 }

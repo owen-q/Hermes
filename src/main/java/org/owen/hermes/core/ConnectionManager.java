@@ -1,20 +1,20 @@
 package org.owen.hermes.core;
 
-import io.netty.channel.ChannelHandlerContext;
-import org.owen.hermes.model.Transport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import lombok.extern.slf4j.Slf4j;
+
+import org.owen.hermes.model.Transport;
+
+import io.netty.channel.ChannelHandlerContext;
+
 /**
  * Created by owen_q on 2018. 5. 5..
  */
+@Slf4j
 public class ConnectionManager {
-    private Logger logger= LoggerFactory.getLogger(ConnectionManager.class);
-
     // TODO: change ChannelHandlerContext to {@link org.owen.hermes.core.ClientConnection}
     private Map<String, ChannelHandlerContext> clientMap = null;
 
@@ -46,12 +46,12 @@ public class ConnectionManager {
         if(this.clientMap.containsKey(connectionKey)){
             this.clientMap.remove(connectionKey);
 
-            if(logger.isDebugEnabled())
-                logger.debug("Delete Client success :: {}", connectionKey);
+            if(log.isDebugEnabled())
+                log.debug("Delete Client success :: {}", connectionKey);
         }
         else{
-            if(logger.isDebugEnabled())
-                logger.info("Delete Client fail :: {}", connectionKey);
+            if(log.isDebugEnabled())
+                log.info("Delete Client fail :: {}", connectionKey);
         }
     }
 
